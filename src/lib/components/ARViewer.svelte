@@ -87,6 +87,7 @@
             </div>
         </div>
     {:else if arMindUrl && videoUrl}
+        {@const cleanVideoUrl = videoUrl.startsWith('/') ? videoUrl : `/${videoUrl}`}
         <a-scene
                 mindar-image={`imageTargetSrc: ${baseUrl}${base}/${arMindUrl.replace(/^\//, '')}; autoStart: true;`}
                 color-space="sRGB"
@@ -96,7 +97,6 @@
                 embedded
         >
             <a-assets>
-                {@const cleanVideoUrl = videoUrl.startsWith('/') ? videoUrl : `/${videoUrl}`}
                 <video id="ar-video"
                        src={`${baseUrl}${base}${cleanVideoUrl}`}
                        preload="auto"
