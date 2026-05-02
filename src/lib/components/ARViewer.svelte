@@ -101,9 +101,9 @@
     {:else if arMindUrl && videoUrl}
         {@const cleanVideoUrl = videoUrl.startsWith('/') ? videoUrl : `/${videoUrl}`}
         <a-scene
-                mindar-image={`imageTargetSrc: ${baseUrl}${base}/${arMindUrl.replace(/^\//, '')}; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.001;`}
+                mindar-image={`imageTargetSrc: ${baseUrl}${base}/${arMindUrl.replace(/^\//, '')}; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.001; warmupTolerance: 10; missTolerance: 15;`}
                 color-space="sRGB"
-                renderer="colorManagement: true, physicallyCorrectLights: true, antialias: true, alpha: true, precision: medium"
+                renderer="colorManagement: true, physicallyCorrectLights: true, antialias: true, alpha: true, precision: high, powerPreference: high-performance"
                 vr-mode-ui="enabled: false"
                 device-orientation-permission-ui="enabled: false"
                 embedded
