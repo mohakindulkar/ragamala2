@@ -50,9 +50,18 @@
     // NEW: The function that unlocks the audio engine AND forces camera perm
     async function startExperience() {
         try {
-            // Explicitly request camera to force the browser's permission prompt
-            await navigator.mediaDevices.getUserMedia({ video: true });
-            userInteracted = true;
+            // Explicitly request the BACK camera to force the browser's permission prompt
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: 'environment' } 
+            });
+            // IMMEDIATELY release the camera so MindAR can use it without conflict!
+            stream.getTracks().forEach(track => track.stop());
+            
+            // Wait 1 second for the phone's hardware to fully release the camera lens.
+            // Since permission is now permanently granted, MindAR can grab it without a click!
+            setTimeout(() => {
+                userInteracted = true;
+            }, 1000);
         } catch (err) {
             console.error("Camera access denied:", err);
             alert("Camera access is required for AR. Please enable it in your browser settings.");
