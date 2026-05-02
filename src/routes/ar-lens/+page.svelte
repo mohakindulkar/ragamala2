@@ -4,8 +4,8 @@
     import ARViewer from '$lib/components/ARViewer.svelte';
 
     // Extract the dynamic paths from the URL parameters
-    $: arMindUrl = $page.url.searchParams.get('mind');
-    $: videoUrl = $page.url.searchParams.get('video');
+    $: arMindUrl = decodeURIComponent($page.url.searchParams.get('mind') || '');
+    $: videoUrl = decodeURIComponent($page.url.searchParams.get('video') || '');
 
     function goBack() {
         if (browser) window.history.back();
