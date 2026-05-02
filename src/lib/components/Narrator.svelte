@@ -102,8 +102,9 @@
             {#if $activeRaga.image}
                 <div class="gallery-container">
                     {#each Array.isArray($activeRaga.image) ? $activeRaga.image : [{ url: $activeRaga.image, txt: '' }] as img}
+                        {@const cleanUrl = img.url.startsWith('/') ? img.url : `/${img.url}`}
                         <button class="thumbnail-btn" on:click={() => openOverlay(img)} aria-label="View painting full size">
-                            <img src={`${base}${img.url}`} alt={displayName} class="thumbnail-img" />
+                            <img src={`${base}${cleanUrl}`} alt={displayName} class="thumbnail-img" />
                         </button>
                     {/each}
                 </div>
