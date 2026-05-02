@@ -1,11 +1,11 @@
 <script>
-    import { page } from '$app/stores';
-    import { browser } from '$app/environment';
-    import ARViewer from '$lib/components/ARViewer.svelte';
+    import { page } from "$app/stores";
+    import { browser } from "$app/environment";
+    import ARViewer from "$lib/components/ARViewer.svelte";
 
     // Extract the dynamic paths from the URL parameters
-    $: arMindUrl = decodeURIComponent($page.url.searchParams.get('mind') || '');
-    $: videoUrl = decodeURIComponent($page.url.searchParams.get('video') || '');
+    $: arMindUrl = decodeURIComponent($page.url.searchParams.get("mind") || "");
+    $: videoUrl = decodeURIComponent($page.url.searchParams.get("video") || "");
 
     function goBack() {
         if (browser) window.history.back();
@@ -14,7 +14,10 @@
 
 <svelte:head>
     <title>Museum AR Lens</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
 </svelte:head>
 
 <div class="lens-wrapper">
@@ -37,7 +40,9 @@
             <div class="error-state">
                 <span class="icon">⚠️</span>
                 <p>No artwork specified.</p>
-                <p style="font-size: 0.7rem; opacity: 0.5;">{ $page.url.search }</p>
+                <p style="font-size: 0.7rem; opacity: 0.5;">
+                    {$page.url.search}
+                </p>
             </div>
         {/if}
     </main>
@@ -65,7 +70,11 @@
         display: flex;
         align-items: center;
         padding: 15px 20px;
-        background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0));
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.9),
+            rgba(0, 0, 0, 0)
+        );
         padding-bottom: 30px;
     }
 

@@ -1,2 +1,10 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# PREVENT FILE CORRUPTION ON WINDOWS
+# These files are binary. Do not change their line endings!
+*.mind binary
+*.mp4 binary
+*.jpg binary
+*.jpeg binary
+*.png binary
