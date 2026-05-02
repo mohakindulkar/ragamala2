@@ -44,9 +44,16 @@
         document.head.appendChild(aframeScript);
     });
 
-    // NEW: The function that unlocks the audio engine
-    function startExperience() {
-        userInteracted = true;
+    // NEW: The function that unlocks the audio engine AND forces camera perm
+    async function startExperience() {
+        try {
+            // Explicitly request camera to force the browser's permission prompt
+            await navigator.mediaDevices.getUserMedia({ video: true });
+            userInteracted = true;
+        } catch (err) {
+            console.error("Camera access denied:", err);
+            alert("Camera access is required for AR. Please enable it in your browser settings.");
+        }
     }
 
     onDestroy(() => {

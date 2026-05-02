@@ -39,23 +39,19 @@
  */
 declare module '$env/static/private' {
 	export const ALLUSERSPROFILE: string;
-	export const ANTIGRAVITY_AGENT: string;
-	export const ANTIGRAVITY_EDITOR_APP_ROOT: string;
-	export const ANTIGRAVITY_TRAJECTORY_ID: string;
 	export const APPDATA: string;
 	export const ChocolateyInstall: string;
 	export const ChocolateyLastPathUpdate: string;
-	export const CHROME_CRASHPAD_PIPE_NAME: string;
 	export const CommonProgramFiles: string;
 	export const CommonProgramW6432: string;
 	export const COMPUTERNAME: string;
 	export const ComSpec: string;
 	export const DriverData: string;
-	export const EFC_1540_1262719628: string;
-	export const EFC_1540_1592913036: string;
-	export const EFC_1540_2283032206: string;
-	export const EFC_1540_2775293581: string;
-	export const EFC_1540_3789132940: string;
+	export const EFC_10228_1262719628: string;
+	export const EFC_10228_1592913036: string;
+	export const EFC_10228_2283032206: string;
+	export const EFC_10228_2775293581: string;
+	export const EFC_10228_3789132940: string;
 	export const FPS_BROWSER_APP_PROFILE_STRING: string;
 	export const FPS_BROWSER_USER_PROFILE_STRING: string;
 	export const HOMEDRIVE: string;
@@ -79,6 +75,7 @@ declare module '$env/static/private' {
 	export const ProgramData: string;
 	export const ProgramFiles: string;
 	export const ProgramW6432: string;
+	export const PROMPT: string;
 	export const PSModulePath: string;
 	export const PUBLIC: string;
 	export const SESSIONNAME: string;
@@ -90,11 +87,6 @@ declare module '$env/static/private' {
 	export const USERDOMAIN_ROAMINGPROFILE: string;
 	export const USERNAME: string;
 	export const USERPROFILE: string;
-	export const VSCODE_CODE_CACHE_PATH: string;
-	export const VSCODE_CWD: string;
-	export const VSCODE_IPC_HOOK: string;
-	export const VSCODE_NLS_CONFIG: string;
-	export const VSCODE_PID: string;
 	export const windir: string;
 	export const ZES_ENABLE_SYSMAN: string;
 }
@@ -184,23 +176,19 @@ declare module '$env/static/public' {
 declare module '$env/dynamic/private' {
 	export const env: {
 		ALLUSERSPROFILE: string;
-		ANTIGRAVITY_AGENT: string;
-		ANTIGRAVITY_EDITOR_APP_ROOT: string;
-		ANTIGRAVITY_TRAJECTORY_ID: string;
 		APPDATA: string;
 		ChocolateyInstall: string;
 		ChocolateyLastPathUpdate: string;
-		CHROME_CRASHPAD_PIPE_NAME: string;
 		CommonProgramFiles: string;
 		CommonProgramW6432: string;
 		COMPUTERNAME: string;
 		ComSpec: string;
 		DriverData: string;
-		EFC_1540_1262719628: string;
-		EFC_1540_1592913036: string;
-		EFC_1540_2283032206: string;
-		EFC_1540_2775293581: string;
-		EFC_1540_3789132940: string;
+		EFC_10228_1262719628: string;
+		EFC_10228_1592913036: string;
+		EFC_10228_2283032206: string;
+		EFC_10228_2775293581: string;
+		EFC_10228_3789132940: string;
 		FPS_BROWSER_APP_PROFILE_STRING: string;
 		FPS_BROWSER_USER_PROFILE_STRING: string;
 		HOMEDRIVE: string;
@@ -224,6 +212,7 @@ declare module '$env/dynamic/private' {
 		ProgramData: string;
 		ProgramFiles: string;
 		ProgramW6432: string;
+		PROMPT: string;
 		PSModulePath: string;
 		PUBLIC: string;
 		SESSIONNAME: string;
@@ -235,11 +224,6 @@ declare module '$env/dynamic/private' {
 		USERDOMAIN_ROAMINGPROFILE: string;
 		USERNAME: string;
 		USERPROFILE: string;
-		VSCODE_CODE_CACHE_PATH: string;
-		VSCODE_CWD: string;
-		VSCODE_IPC_HOOK: string;
-		VSCODE_NLS_CONFIG: string;
-		VSCODE_PID: string;
 		windir: string;
 		ZES_ENABLE_SYSMAN: string;
 		[key: `PUBLIC_${string}`]: undefined;

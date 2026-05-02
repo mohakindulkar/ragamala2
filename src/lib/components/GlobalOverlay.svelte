@@ -12,12 +12,15 @@
 
     // Reactively generate the QR code URL whenever Magic Mode is opened
     $: if (isMagicMode && browser && $overlayData) {
-        // Automatically grabs your current domain (e.g., http://192.168.1.x:5173)
+        // Automatically grabs your current domain (e.g., http://192.168.1.x:5173 or ngrok)
         const baseUrl = window.location.origin;
-        // Constructs the exact link for the Lens page with fallbacks if JSON is missing them
-        const mindPath = $overlayData.ar || '/ar/default.mind';
-        const videoPath = $overlayData.video || '/video/default.mp4';
+        
+        // Clean up paths: ensure no double slashes
+        const mindPath = ($overlayData.ar || 'ar/default.mind').replace(/^\//, '');
+        const videoPath = ($overlayData.video || 'video/default.mp4').replace(/^\//, '');
+        
         const targetUrl = `${baseUrl}${base}/ar-lens?mind=${mindPath}&video=${videoPath}`;
+        
         // Feeds the link to the free QR generation API
         qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(targetUrl)}`;
     }
