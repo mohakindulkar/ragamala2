@@ -1,0 +1,82 @@
+{
+  "name": "Megh",
+  "season": "Varsha",
+  "type": "Parent Raga",
+  "description": "Refreshing and romantic; personified as Krishna dancing in the rain.",
+  "color": "Dark Storm Clouds / Deep Blue",
+  "time": "Monsoon",
+  "image": [
+    {
+      "url": "/images/megh-main.jpg",
+      "txt": "Megh Raga painting."
+    }
+  ],
+  "musicalDNA": {
+    "arohana": ["C4", "D4", "F4", "G4", "Bb4", "C5"],
+    "avarohana": ["C5", "Bb4", "G4", "F4", "D4", "C4"],
+    "vadi": "C4",
+    "samvadi": "G4",
+    "tempo": "slow",
+    "playStyle": "heavy-slides"
+  },
+  "children": [
+    {
+      "name": "Gaundi-Malari",
+      "type": "Ragini",
+      "description": "A joyous woman celebrating the first monsoon rains, surrounded by dancing peacocks.",
+      "musicalMutation": {
+        "description": "Adds a natural 3rd (E4) to brighten the storm clouds.",
+        "vadi": "F4",
+        "playStyle": "heavy-slides"
+      },
+      "image": [
+        {
+          "url": "/images/kakubha-ragini-roseberys-london.jpeg",
+          "ar": "/ar/kakubha-ragini-roseberys-london.mind",
+          "video": "/video/kakubha-ragini-roseberys-london.mp4",
+          "txt": "Gaundi-Malari Ragini. Opaque watercolor and gold on paper."
+        }
+      ],
+      "children": [
+        {
+          "name": "Jalandhar",
+          "type": "Ragaputra",
+          "musicalMutation": {
+            "description": "Mimics the rapid patter of heavy rain.",
+            "tempo": "fast",
+            "vadi": "C5"
+          }
+        },
+        {
+          "name": "Gond",
+          "type": "Ragaputra"
+        }
+      ]
+    },
+    {
+      "name": "Sorath",
+      "type": "Ragini",
+      "description": "A woman feeding a peacock under a heavily overcast sky.",
+      "musicalMutation": {
+        "description": "Flattens the 6th note for a moody, humid atmosphere.",
+        "flattenNotes": ["Ab4"],
+        "tempo": "slow"
+      }
+    },
+    {
+      "name": "Asa",
+      "type": "Ragini",
+      "description": "A confident woman preparing her bedchamber for a rainy night."
+    },
+    {
+      "name": "Gunguni",
+      "type": "Ragini",
+      "description": "A woman shivering slightly in the cool monsoon breeze."
+    },
+    {
+      "name": "Sooho",
+      "type": "Ragini",
+      "description": "A spirited woman riding a horse through a lightning storm."
+    }
+  ]
+}

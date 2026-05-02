@@ -1,0 +1,77 @@
+{
+  "name": "Hindol",
+  "season": "Vasanta",
+  "type": "Parent Raga",
+  "description": "Joyous and playful; personified as Lord Krishna on a swing (hindola).",
+  "color": "Vibrant/Fertile (associated with Holi)",
+  "time": "Spring",
+  "image": [
+    {
+      "url": "/images/hindol-main.jpg",
+      "txt": "Hindol Raga painting."
+    }
+  ],
+  "musicalDNA": {
+    "arohana": ["C4", "E4", "F#4", "A4", "B4", "C5"],
+    "avarohana": ["C5", "B4", "A4", "F#4", "E4", "C4"],
+    "vadi": "A4",
+    "samvadi": "E4",
+    "tempo": "medium-fast",
+    "playStyle": "playful"
+  },
+  "children": [
+    {
+      "name": "Basanti",
+      "type": "Ragini",
+      "description": "A radiant woman plucking spring blossoms to offer to the gods.",
+      "musicalMutation": {
+        "description": "Raises the 4th note to create a sharp, bright springtime feeling.",
+        "vadi": "E4",
+        "tempo": "fast"
+      },
+      "children": [
+        {
+          "name": "Vasant",
+          "type": "Ragaputra",
+          "musicalMutation": {
+            "description": "Plays strictly in the upper register.",
+            "octaveShift": 1,
+            "playStyle": "playful"
+          }
+        },
+        {
+          "name": "Pancham",
+          "type": "Ragaputra"
+        }
+      ]
+    },
+    {
+      "name": "Sindhoori",
+      "type": "Ragini",
+      "description": "Lovers playfully throwing vibrant red powder (sindoor) during the Holi festival.",
+      "musicalMutation": {
+        "playStyle": "staccato-plucks",
+        "tempo": "medium-fast"
+      }
+    },
+    {
+      "name": "Telangi",
+      "type": "Ragini",
+      "description": "A woman applying cooling sandalwood paste to her body in the warming spring air.",
+      "musicalMutation": {
+        "vadi": "C5",
+        "tempo": "medium"
+      }
+    },
+    {
+      "name": "Devkari",
+      "type": "Ragini",
+      "description": "A devoted woman offering prayers at a forest shrine."
+    },
+    {
+      "name": "Aheeri",
+      "type": "Ragini",
+      "description": "A cowherd girl waiting for Krishna by the riverbank."
+    }
+  ]
+}

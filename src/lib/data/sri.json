@@ -1,0 +1,79 @@
+{
+  "name": "Sri",
+  "season": "Sharad",
+  "type": "Parent Raga",
+  "description": "Grand and heroic; an aristocratic king seated on a terrace.",
+  "color": "Lavish Gold",
+  "time": "Autumn / Early Evening",
+  "image": [
+    {
+      "url": "/images/sri-main.jpg",
+      "txt": "Sri Raga painting."
+    }
+  ],
+  "musicalDNA": {
+    "arohana": ["C4", "Db4", "E4", "F#4", "G4", "Ab4", "B4", "C5"],
+    "avarohana": ["C5", "B4", "Ab4", "G4", "F#4", "E4", "Db4", "C4"],
+    "vadi": "Db4",
+    "samvadi": "G4",
+    "tempo": "slow-medium",
+    "playStyle": "hesitant-leaps"
+  },
+  "children": [
+    {
+      "name": "Asavari",
+      "type": "Ragini",
+      "description": "A wild, ascetic woman sitting on a mountaintop, charming snakes with her flute.",
+      "musicalMutation": {
+        "description": "Introduces a flat 2nd (Db4) to create a hypnotic, undulating melody.",
+        "vadi": "Db4",
+        "playStyle": "gliding"
+      },
+      "children": [
+        {
+          "name": "Bangal",
+          "type": "Ragaputra",
+          "musicalMutation": {
+            "description": "Jumps erratically between the lower and upper registers.",
+            "playStyle": "hesitant-leaps"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gauri",
+      "type": "Ragini",
+      "description": "A woman wandering in the autumn woods, holding wands of blossoming flowers.",
+      "musicalMutation": {
+        "description": "Rests heavily on the 5th note (G4) to create a feeling of golden, autumnal stability.",
+        "vadi": "G4",
+        "tempo": "slow-medium"
+      },
+      "children": [
+        {
+          "name": "Kumbh",
+          "type": "Ragaputra"
+        }
+      ]
+    },
+    {
+      "name": "Bairavi",
+      "type": "Ragini",
+      "description": "A devotee offering white lotuses to a Shiva lingam at dawn.",
+      "musicalMutation": {
+        "tempo": "slow",
+        "playStyle": "meditative"
+      }
+    },
+    {
+      "name": "Karnati",
+      "type": "Ragini",
+      "description": "A regal woman reading a manuscript by the light of an oil lamp."
+    },
+    {
+      "name": "Sindhavi",
+      "type": "Ragini",
+      "description": "A passionate woman confronting her lover after a night of betrayal."
+    }
+  ]
+}

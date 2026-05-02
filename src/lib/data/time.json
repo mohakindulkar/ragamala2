@@ -1,0 +1,46 @@
+[
+  {
+    "id": "night",
+    "name": "Ratri",
+    "startHour": 0,
+    "endHour": 6,
+    "icon": "night-clear",
+    "color": "#050515",
+    "glow": "#4a90e2",
+    "description": "The deep peace of midnight. A time for introspection, secrets, and the cooling of the earth.",
+    "verse": "The world sleeps in shadows."
+  },
+  {
+    "id": "dawn",
+    "name": "Prabhat",
+    "startHour": 6,
+    "endHour": 12,
+    "icon": "sunrise",
+    "color": "#ffb347",
+    "glow": "#ffb347",
+    "description": "The birth of light. Birds announce the day and the scent of fresh blossoms fills the air.",
+    "verse": "Awakening with the sun."
+  },
+  {
+    "id": "day",
+    "name": "Madhyahna",
+    "startHour": 12,
+    "endHour": 18,
+    "icon": "sun-high",
+    "color": "#ffc400",
+    "glow": "#ffc400",
+    "description": "The peak of vitality. Life is in full motion under the golden gaze of the meridian sun.",
+    "verse": "The peak of light and heat."
+  },
+  {
+    "id": "dusk",
+    "name": "Sandhya",
+    "startHour": 18,
+    "endHour": 24,
+    "icon": "sunset",
+    "color": "#d35400",
+    "glow": "#e65100",
+    "description": "The union of day and night. A meditative hour where colors bleed into orange and indigo.",
+    "verse": "Colors fade into the twilight."
+  }
+]

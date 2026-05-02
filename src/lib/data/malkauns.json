@@ -1,0 +1,74 @@
+{
+  "name": "Malkauns",
+  "season": "Hemant",
+  "type": "Parent Raga",
+  "description": "Royal grandeur and youthful love; an aristocratic human lord holding court.",
+  "color": "Fair-complexioned (Raginis: 'Color of Love')",
+  "time": "Midnight",
+  "image": [
+    {
+      "url": "/images/malkauns-main.jpg",
+      "txt": "Malkauns Raga painting."
+    }
+  ],
+  "musicalDNA": {
+    "arohana": ["C4", "Eb4", "F4", "Ab4", "Bb4", "C5"],
+    "avarohana": ["C5", "Bb4", "Ab4", "F4", "Eb4", "C4"],
+    "vadi": "F4",
+    "samvadi": "C4",
+    "tempo": "slow",
+    "playStyle": "meditative"
+  },
+  "children": [
+    {
+      "name": "Dhanasri",
+      "type": "Ragini",
+      "description": "A weeping woman painting a portrait of her absent lover to ease her sorrow.",
+      "musicalMutation": {
+        "description": "Flattens the 3rd and 6th notes heavily to evoke Karuna (compassion and longing).",
+        "flattenNotes": ["Eb4", "Ab4"],
+        "vadi": "Eb4",
+        "tempo": "slow"
+      },
+      "children": [
+        {
+          "name": "Maru",
+          "type": "Ragaputra",
+          "musicalMutation": {
+            "tempo": "slow",
+            "playStyle": "meditative"
+          }
+        },
+        {
+          "name": "Mewar",
+          "type": "Ragaputra"
+        }
+      ]
+    },
+    {
+      "name": "Devagandhari",
+      "type": "Ragini",
+      "description": "An ascetic woman practicing austerities in a ruined temple.",
+      "musicalMutation": {
+        "description": "Uses slow, heavy slides between notes to create a mystic atmosphere.",
+        "playStyle": "heavy-slides",
+        "vadi": "F4"
+      }
+    },
+    {
+      "name": "Gaundkari",
+      "type": "Ragini",
+      "description": "A restless woman pacing a palace terrace under the winter moon."
+    },
+    {
+      "name": "Gandhari",
+      "type": "Ragini",
+      "description": "A wandering female mendicant singing spiritual verses."
+    },
+    {
+      "name": "Seehute",
+      "type": "Ragini",
+      "description": "A warrior woman holding a sword, waiting by a midnight fire."
+    }
+  ]
+}

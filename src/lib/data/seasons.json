@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Vasanta",
+    "wing": "left",
+    "start": 0,
+    "end": 120,
+    "color": "#8bc34a",
+    "symbol": "Cuckoo / Mango Blossom",
+    "icon": "❀",
+    "description": "Spring: The king of seasons. It is associated with rebirth, the flowering of mango trees, and the song of the cuckoo bird."
+  },
+  {
+    "name": "Grishma",
+    "wing": "left",
+    "start": 120,
+    "end": 240,
+    "color": "#ffb300",
+    "symbol": "Sun / Gazelle",
+    "icon": "☀",
+    "description": "Summer: A season of intense heat. Iconography often features gazelles seeking water in mirages and parched earth."
+  },
+  {
+    "name": "Varsha",
+    "wing": "left",
+    "start": 240,
+    "end": 360,
+    "color": "#1e88e5",
+    "symbol": "Dark Clouds / Peacock",
+    "icon": "⛈",
+    "description": "Monsoon: The arrival of life-giving rains. Symbolized by heavy clouds and the peacock dancing in ecstasy."
+  },
+  {
+    "name": "Sharad",
+    "wing": "right",
+    "start": 0,
+    "end": 120,
+    "color": "#fb8c00",
+    "symbol": "Full Moon / Lotus",
+    "icon": "☾",
+    "description": "Autumn: A time of clarity and calm. The harvest moon shines brightest and white lotuses bloom in still waters."
+  },
+  {
+    "name": "Hemant",
+    "wing": "right",
+    "start": 120,
+    "end": 240,
+    "color": "#8d6e63",
+    "symbol": "Ripened Grain / Sugarcane",
+    "icon": "🌾",
+    "description": "Early Winter: The season of abundance and harvest. Represented by fields of gold grain and a pleasant chill."
+  },
+  {
+    "name": "Shishira",
+    "wing": "right",
+    "start": 240,
+    "end": 360,
+    "color": "#546e7a",
+    "symbol": "Frost / Barren Branch",
+    "icon": "❄",
+    "description": "Late Winter: Deep cold and mist. Represents the quiet stillness of nature and the inward focus of energy."
+  }
+]

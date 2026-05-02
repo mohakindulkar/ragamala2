@@ -1,0 +1,28 @@
+import { writable } from 'svelte/store';
+
+// Helper to determine the current season based on the calendar month
+function getCurrentCalendarSeason() {
+    const month = new Date().getMonth(); // 0-11 (Jan is 0)
+
+    // Traditional Indian Ritu mapping (approximate Gregorian months)
+    if (month >= 2 && month <= 3) return 'Vasanta';  // March, April
+    if (month >= 4 && month <= 5) return 'Grishma';  // May, June
+    if (month >= 6 && month <= 7) return 'Varsha';   // July, August
+    if (month >= 8 && month <= 9) return 'Sharad';   // Sept, Oct
+    if (month >= 10 && month <= 11) return 'Hemant'; // Nov, Dec
+    return 'Shishira';                               // Jan, Feb
+}
+
+export const defaultSeason = getCurrentCalendarSeason();
+
+// Default season
+export const currentSeason = writable(defaultSeason);
+// The globally active Raga data
+export const activeRaga = writable(null);
+// The globally active language code (defaults to English)
+export const currentLang = writable('en');
+// Holds the data for the global overlay. Null means it's closed!
+export const overlayData = writable(null);
+// We can derive the background colors from the activeSeason and activeTime
+export const bgColorPrimary = writable('#3e2723'); // Default fallback
+export const bgColorAccent = writable('#ffaa00');  // Default fallback

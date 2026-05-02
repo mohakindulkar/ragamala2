@@ -1,0 +1,62 @@
+{
+  "name": "Rāgamālā",
+  "type": "root",
+  "description": "The Garland of Ragas",
+  "children": [
+    {
+      "name": "Bhairav",
+      "type": "parent",
+      "season": "Shishira",
+      "timeOfDay": "Morning",
+      "rasa": "Peace and Devotion (Shanta/Bhakti)",
+      "audioUrl": "/audio/bhairav-alap.mp3",
+      "dhyanaSanskrit": "Devadidev mahadeva shankar...",
+      "dhyanaEnglish": "With the crescent moon upon his head, his body smeared with ashes, Bhairav emerges at dawn...",
+      "imagePaintingUrl": "/images/paintings/bhairav.jpg",
+      "children": [
+        {
+          "name": "Bhairavi",
+          "type": "ragini",
+          "season": "Shishira",
+          "timeOfDay": "Morning",
+          "rasa": "Compassion (Karuna)",
+          "audioUrl": "/audio/bhairavi-composition.mp3",
+          "dhyanaSanskrit": "Sphatik-sphurad-deha-ruchi...",
+          "dhyanaEnglish": "Radiant as crystal, playing the cymbals, Bhairavi worships at the shrine...",
+          "imagePaintingUrl": "/images/paintings/bhairavi.jpg",
+          "children": [
+            {
+              "name": "Punjar",
+              "type": "putra",
+              "season": "Shishira",
+              "audioUrl": "/audio/punjar.mp3"
+            }
+          ]
+        },
+        {
+          "name": "Madhumadhavi",
+          "type": "ragini",
+          "season": "Vasanta",
+          "timeOfDay": "Late Morning",
+          "rasa": "Romantic Yearning (Sringara)",
+          "audioUrl": "/audio/madhumadhavi.mp3",
+          "dhyanaSanskrit": "Nil-ambara...",
+          "dhyanaEnglish": "Wearing a blue garment, gazing at the gathering monsoon clouds...",
+          "imagePaintingUrl": "/images/paintings/madhumadhavi.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Malkouns",
+      "type": "parent",
+      "season": "Hemant",
+      "timeOfDay": "Late Night",
+      "rasa": "Valor and Seriousness (Veera/Shanta)",
+      "audioUrl": "/audio/malkouns-alap.mp3",
+      "dhyanaSanskrit": "Raktambara...",
+      "dhyanaEnglish": "Clad in red, wielding a mace, surrounded by attendants...",
+      "imagePaintingUrl": "/images/paintings/malkouns.jpg",
+      "children": []
+    }
+  ]
+}

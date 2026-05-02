@@ -1,0 +1,20 @@
+{
+	"/": [
+		"src/routes/+layout.js",
+		"src/routes/+layout.js"
+	],
+	"/admin": [
+		"src/routes/+layout.js"
+	],
+	"/admin/compiler": [
+		"src/routes/+layout.js"
+	],
+	"/ar-lens": [
+		"src/routes/ar-lens/+page.js",
+		"src/routes/+layout.js"
+	],
+	"/family-tree": [
+		"src/routes/+layout.js",
+		"src/routes/+layout.js"
+	]
+}

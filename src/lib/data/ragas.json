@@ -1,0 +1,103 @@
+{
+  "name": "Ragamala Ancestry",
+  "children": [
+    {
+      "name": "Hindol",
+      "season": "Vasanta",
+      "type": "Parent Raga",
+      "description": "Joyous and playful; personified as Lord Krishna on a swing (hindola).",
+      "color": "Vibrant/Fertile (associated with Holi)",
+      "time": "Spring",
+      "children": [
+        { "name": "Telangi", "type": "Ragini" },
+        { "name": "Devkari", "type": "Ragini" },
+        { "name": "Basanti", "type": "Ragini" },
+        { "name": "Sindhoori", "type": "Ragini" },
+        { "name": "Aheeri", "type": "Ragini" }
+      ]
+    },
+    {
+      "name": "Dipak",
+      "season": "Grishma",
+      "type": "Parent Raga",
+      "description": "Intense passion; associated with flames and glowing lamps.",
+      "color": "Fiery Red",
+      "time": "Summer Night",
+      "children": [
+        { "name": "Kachheli", "type": "Ragini" },
+        { "name": "Patmanjari", "type": "Ragini" },
+        { "name": "Todi", "type": "Ragini" },
+        { "name": "Kamodi", "type": "Ragini" },
+        { "name": "Gujri", "type": "Ragini" }
+      ]
+    },
+    {
+      "name": "Megh",
+      "season": "Varsha",
+      "type": "Parent Raga",
+      "description": "Refreshing and romantic; personified as Krishna dancing in the rain.",
+      "color": "Dark Storm Clouds / Deep Blue",
+      "time": "Monsoon",
+      "children": [
+        { "name": "Sorath", "type": "Ragini" },
+        { "name": "Gaundi-Malari", "type": "Ragini" },
+        { "name": "Asa", "type": "Ragini" },
+        { "name": "Gunguni", "type": "Ragini" },
+        { "name": "Sooho", "type": "Ragini" }
+      ]
+    },
+    {
+      "name": "Sri",
+      "season": "Sharad",
+      "type": "Parent Raga",
+      "description": "Grand and heroic; an aristocratic king seated on a terrace.",
+      "color": "Lavish Gold",
+      "time": "Autumn / Early Evening",
+      "children": [
+        { "name": "Bairavi", "type": "Ragini" },
+        { "name": "Karnati", "type": "Ragini" },
+        { "name": "Gauri", "type": "Ragini" },
+        { "name": "Asavari", "type": "Ragini" },
+        { "name": "Sindhavi", "type": "Ragini" }
+      ]
+    },
+    {
+      "name": "Malkauns",
+      "season": "Hemant",
+      "type": "Parent Raga",
+      "description": "Royal grandeur and youthful love; an aristocratic human lord holding court.",
+      "color": "Fair-complexioned (Raginis: 'Color of Love')",
+      "time": "Midnight",
+      "children": [
+        { "name": "Gaundkari", "type": "Ragini" },
+        { "name": "Devagandhari", "type": "Ragini" },
+        { "name": "Gandhari", "type": "Ragini" },
+        { "name": "Seehute", "type": "Ragini" },
+        { "name": "Dhanasri", "type": "Ragini" }
+      ]
+    },
+    {
+      "name": "Bhairav",
+      "season": "Shishira",
+      "type": "Parent Raga",
+      "description": "Solemn, devotional, and ascetic; personified as Lord Shiva.",
+      "color": "Deep Blue / White (Ash)",
+      "time": "Dawn",
+      "children": [
+        { "name": "Bhairavi", "type": "Ragini" },
+        { "name": "Bilawali", "type": "Ragini" },
+        { "name": "Punyaki", "type": "Ragini" },
+        { "name": "Bangali", "type": "Ragini" },
+        { "name": "Aslekhi", "type": "Ragini" },
+        {
+          "name": "Sons of Bhairav",
+          "type": "group",
+          "children": [
+            { "name": "Pancham", "type": "ragaputra" },
+            { "name": "Harakh", "type": "ragaputra" }
+          ]
+        }
+      ]
+    }
+  ]
+}

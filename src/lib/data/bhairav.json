@@ -1,0 +1,64 @@
+{
+  "name": "Bhairav",
+  "season": "Shishira",
+  "type": "Parent Raga",
+  "description": "Solemn, devotional, and ascetic; personified as Lord Shiva.",
+  "time": "Dawn",
+  "image": [
+    {
+      "url": "/images/bhairav-main.jpg",
+      "txt": "Bhairav Raga painting."
+    }
+
+  ],
+  "musicalDNA": {
+    "arohana": ["C4", "Db4", "E4", "F4", "G4", "Ab4", "B4", "C5"],
+    "avarohana": ["C5", "B4", "Ab4", "G4", "F4", "E4", "Db4", "C4"],
+    "vadi": "Ab4",
+    "samvadi": "Db4",
+    "tempo": "slow",
+    "playStyle": "gliding"
+  },
+  "children": [
+    {
+      "name": "Bhairavi",
+      "type": "Ragini",
+      "musicalMutation": {
+        "description": "Flattens the 3rd and 7th to create compassion (Karuna)",
+        "flatten": ["E4", "B4"],
+        "vadi": "F4"
+      },
+      "children": [
+        {
+          "name": "Pancham",
+          "type": "ragaputra",
+          "musicalMutation": {
+            "description": "Takes the mother's scale but plays it in a playful, double-time tempo",
+            "tempo": "fast",
+            "octaveShift": 1
+          }
+        },
+        {
+          "name": "Harakh",
+          "type": "ragaputra"
+        }
+      ]
+    },
+    {
+      "name": "Bilawali",
+      "type": "Ragini"
+    },
+    {
+      "name": "Punyaki",
+      "type": "Ragini"
+    },
+    {
+      "name": "Bangali",
+      "type": "Ragini"
+    },
+    {
+      "name": "Aslekhi",
+      "type": "Ragini"
+    }
+  ]
+}
