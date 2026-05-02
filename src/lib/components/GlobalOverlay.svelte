@@ -70,12 +70,12 @@
 </script>
 
 {#if $overlayData}
+    {@const fullUrl = $overlayData.url.startsWith('http') || $overlayData.url.startsWith(base) ? $overlayData.url : `${base}/${$overlayData.url.replace(/^\//, '')}`}
     <div class="overlay-backdrop" transition:fade={{ duration: 200 }} on:click={closeOverlay}>
         <div class="overlay-content" on:click|stopPropagation>
 
             <div class="target-stage">
                 <div class="overlay-frame" class:magic-glow={isMagicMode}>
-                    {@const fullUrl = $overlayData.url.startsWith('http') || $overlayData.url.startsWith(base) ? $overlayData.url : `${base}/${$overlayData.url.replace(/^\//, '')}`}
                     <img src={fullUrl} alt="Full screen ragamala" class="overlay-img" />
                 </div>
 
