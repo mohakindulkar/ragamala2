@@ -28,11 +28,16 @@
 
     <main class="scanner-area">
         {#if arMindUrl && videoUrl}
+            <div class="debug-info" style="display: none;">
+                <p>Mind: {arMindUrl}</p>
+                <p>Video: {videoUrl}</p>
+            </div>
             <ARViewer {arMindUrl} {videoUrl} />
         {:else}
             <div class="error-state">
                 <span class="icon">⚠️</span>
-                <p>No artwork specified. Please scan a valid museum QR code.</p>
+                <p>No artwork specified.</p>
+                <p style="font-size: 0.7rem; opacity: 0.5;">{ $page.url.search }</p>
             </div>
         {/if}
     </main>

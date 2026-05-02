@@ -14,34 +14,37 @@
     onMount(() => {
         if (!browser) return;
 
-        const aframeScript = document.createElement('script');
-        aframeScript.src = "https://aframe.io/releases/1.3.0/aframe.min.js";
+        // Force a small delay to let the page stabilize
+        setTimeout(() => {
+            const aframeScript = document.createElement('script');
+            aframeScript.src = "https://aframe.io/releases/1.3.0/aframe.min.js";
 
-        aframeScript.onload = () => {
-            if (!window.AFRAME.components['video-controller']) {
-                window.AFRAME.registerComponent('video-controller', {
-                    init: function () {
-                        this.video = document.querySelector('#ar-video');
+            aframeScript.onload = () => {
+                if (!window.AFRAME) {
+                    console.error("AFRAME failed to initialize");
+                    return;
+                }
+                
+                if (!window.AFRAME.components['video-controller']) {
+                    window.AFRAME.registerComponent('video-controller', {
+                        init: function () {
+                            this.video = document.querySelector('#ar-video');
+                            this.el.addEventListener('targetFound', () => { this.video.play(); });
+                            this.el.addEventListener('targetLost', () => { this.video.pause(); });
+                        }
+                    });
+                }
 
-                        this.el.addEventListener('targetFound', () => {
-                            this.video.play();
-                        });
-                        this.el.addEventListener('targetLost', () => {
-                            this.video.pause();
-                        });
-                    }
-                });
-            }
-
-            const mindarScript = document.createElement('script');
-            mindarScript.src = "https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js";
-            mindarScript.onload = () => {
-                scriptsLoaded = true;
+                const mindarScript = document.createElement('script');
+                mindarScript.src = "https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js";
+                mindarScript.onload = () => { scriptsLoaded = true; };
+                mindarScript.onerror = () => { alert("Failed to load AR engine. Check your connection."); };
+                document.head.appendChild(mindarScript);
             };
-            document.head.appendChild(mindarScript);
-        };
-
-        document.head.appendChild(aframeScript);
+            
+            aframeScript.onerror = () => { alert("Failed to load 3D engine."); };
+            document.head.appendChild(aframeScript);
+        }, 100);
     });
 
     // NEW: The function that unlocks the audio engine AND forces camera perm
