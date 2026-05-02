@@ -75,7 +75,8 @@
 
             <div class="target-stage">
                 <div class="overlay-frame" class:magic-glow={isMagicMode}>
-                    <img src={`${base}${$overlayData.url}`} alt="Full screen ragamala" class="overlay-img" />
+                    {@const fullUrl = $overlayData.url.startsWith('http') || $overlayData.url.startsWith(base) ? $overlayData.url : `${base}/${$overlayData.url.replace(/^\//, '')}`}
+                    <img src={fullUrl} alt="Full screen ragamala" class="overlay-img" />
                 </div>
 
                 {#if isMagicMode}

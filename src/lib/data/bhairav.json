@@ -6,9 +6,9 @@
   "time": "Dawn",
   "image": [
     {
-      "url": "/images/bhairav-main.jpg",
-      "ar": "/ar/bhairav-main.mind",
-      "video": "/video/bhairav-main.mp4",
+      "url": "images/bhairav-main.jpg",
+      "ar": "ar/bhairav-main.mind",
+      "video": "video/bhairav-main.mp4",
       "txt": "Bhairav Raga painting."
     }
 

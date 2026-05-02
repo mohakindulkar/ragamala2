@@ -7,7 +7,7 @@
   "time": "Monsoon",
   "image": [
     {
-      "url": "/images/megh-main.jpg",
+      "url": "images/megh-main.jpg",
       "txt": "Megh Raga painting."
     }
   ],
@@ -31,9 +31,9 @@
       },
       "image": [
         {
-          "url": "/images/kakubha-ragini-roseberys-london.jpeg",
-          "ar": "/ar/kakubha-ragini-roseberys-london.mind",
-          "video": "/video/kakubha-ragini-roseberys-london.mp4",
+          "url": "images/kakubha-ragini-roseberys-london.jpeg",
+          "ar": "ar/kakubha-ragini-roseberys-london.mind",
+          "video": "video/kakubha-ragini-roseberys-london.mp4",
           "txt": "Gaundi-Malari Ragini. Opaque watercolor and gold on paper."
         }
       ],

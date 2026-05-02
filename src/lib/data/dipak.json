@@ -7,7 +7,7 @@
   "time": "Summer Night",
   "image": [
     {
-      "url": "/images/dipak-main.jpg",
+      "url": "images/dipak-main.jpg",
       "txt": "Dipak Raga painting."
     }
   ],
@@ -31,9 +31,9 @@
       },
       "image": [
         {
-          "url": "/images/todi-ragini.jpg",
-          "ar": "/ar/todi-ragini.mind",
-          "video": "/video/todi-ragini.mp4",
+          "url": "images/todi-ragini.jpg",
+          "ar": "ar/todi-ragini.mind",
+          "video": "video/todi-ragini.mp4",
           "txt": "Todi Ragini. Opaque watercolor and gold on paper."
         }
       ],
