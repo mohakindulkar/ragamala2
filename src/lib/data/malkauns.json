@@ -8,6 +8,8 @@
   "image": [
     {
       "url": "images/malkauns-main.jpg",
+      "ar": "ar/malkauns-main.mind",
+      "video": "video/malkauns-main.mp4",
       "txt": "Malkauns Raga painting."
     }
   ],

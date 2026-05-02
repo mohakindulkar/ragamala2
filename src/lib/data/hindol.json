@@ -8,6 +8,8 @@
   "image": [
     {
       "url": "images/hindol-main.jpg",
+      "ar": "ar/hindol-main.mind",
+      "video": "video/hindol-main.mp4",
       "txt": "Hindol Raga painting."
     }
   ],

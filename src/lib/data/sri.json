@@ -8,6 +8,8 @@
   "image": [
     {
       "url": "images/sri-main.jpg",
+      "ar": "ar/sri-main.mind",
+      "video": "video/sri-main.mp4",
       "txt": "Sri Raga painting."
     }
   ],

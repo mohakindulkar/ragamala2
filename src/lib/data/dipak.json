@@ -8,6 +8,8 @@
   "image": [
     {
       "url": "images/dipak-main.jpg",
+      "ar": "ar/dipak-main.mind",
+      "video": "video/dipak-main.mp4",
       "txt": "Dipak Raga painting."
     }
   ],

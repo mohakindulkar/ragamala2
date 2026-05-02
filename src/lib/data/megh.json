@@ -8,6 +8,8 @@
   "image": [
     {
       "url": "images/megh-main.jpg",
+      "ar": "ar/megh-main.mind",
+      "video": "video/megh-main.mp4",
       "txt": "Megh Raga painting."
     }
   ],
