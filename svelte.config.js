@@ -10,7 +10,7 @@ const config = {
 		}),
 		appDir: 'app',
 		paths: {
-			base: process.argv.includes('dev') ? '' : '/ragamala',
+			base: process.argv.includes('dev') ? '' : '/ragamala2',
 		},
 		alias: {
 			$src: 'src',
