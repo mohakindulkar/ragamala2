@@ -88,7 +88,7 @@
         </div>
     {:else if arMindUrl && videoUrl}
         <a-scene
-                mindar-image={`imageTargetSrc: ${baseUrl}${base}/${arMindUrl}; autoStart: true;`}
+                mindar-image={`imageTargetSrc: ${baseUrl}${base}/${arMindUrl.replace(/^\//, '')}; autoStart: true;`}
                 color-space="sRGB"
                 renderer="colorManagement: true, physicallyCorrectLights"
                 vr-mode-ui="enabled: false"
@@ -96,8 +96,9 @@
                 embedded
         >
             <a-assets>
+                {@const cleanVideoUrl = videoUrl.startsWith('/') ? videoUrl : `/${videoUrl}`}
                 <video id="ar-video"
-                       src={`${baseUrl}${base}${videoUrl}`}
+                       src={`${baseUrl}${base}${cleanVideoUrl}`}
                        preload="auto"
                        loop crossorigin="anonymous"
                        playsinline
