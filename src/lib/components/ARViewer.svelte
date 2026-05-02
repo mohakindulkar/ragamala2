@@ -101,9 +101,9 @@
     {:else if arMindUrl && videoUrl}
         {@const cleanVideoUrl = videoUrl.startsWith('/') ? videoUrl : `/${videoUrl}`}
         <a-scene
-                mindar-image={`imageTargetSrc: ${baseUrl}${base}/${arMindUrl.replace(/^\//, '')}; autoStart: true;`}
+                mindar-image={`imageTargetSrc: ${baseUrl}${base}/${arMindUrl.replace(/^\//, '')}; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.001;`}
                 color-space="sRGB"
-                renderer="colorManagement: true, physicallyCorrectLights"
+                renderer="colorManagement: true, physicallyCorrectLights: true, antialias: true, alpha: true, precision: medium"
                 vr-mode-ui="enabled: false"
                 device-orientation-permission-ui="enabled: false"
                 embedded
@@ -114,13 +114,15 @@
                        preload="auto"
                        loop crossorigin="anonymous"
                        playsinline
-                       webkit-playsinline>
+                       webkit-playsinline
+                       muted>
                 </video>
             </a-assets>
 
-            <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+            <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
 
             <a-entity mindar-image-target="targetIndex: 0" video-controller>
+                <!-- Optimized video plane -->
                 <a-video src="#ar-video" width="1" height="1.4" position="0 0 0" rotation="0 0 0"></a-video>
             </a-entity>
         </a-scene>
