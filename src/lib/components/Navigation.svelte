@@ -4,15 +4,28 @@
     import { goto } from '$app/navigation';
     import { fade } from 'svelte/transition';
 
-    // We only show the button if we AREN'T on the homepage
-    let isHome = $derived(page.url.pathname === '/');
+    function normalizePath(pathname) {
+        const cleanBase = (base || '').replace(/\/$/, '');
+        const withoutBase =
+            cleanBase && pathname.startsWith(cleanBase)
+                ? pathname.slice(cleanBase.length) || '/'
+                : pathname;
+
+        return withoutBase.replace(/\/+$/, '') || '/';
+    }
+
+    let currentPath = $derived(normalizePath(page.url.pathname));
+    // Only show on family-tree route (plus tolerated legacy typo alias).
+    let showHomeButton = $derived(
+        currentPath === '/family-tree' || currentPath === '/famil-tree'
+    );
 
     function goHome() {
         goto(`${base}/`);
     }
 </script>
 
-{#if !isHome}
+{#if showHomeButton}
     <nav class="global-nav" in:fade>
         <button onclick={goHome} aria-label="Return Home" class="home-btn">
             <svg xmlns="http://www.w3.org/2000/svg"
