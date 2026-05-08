@@ -1,9 +1,13 @@
-<section class="audio-baithak" aria-label="Baithak scene">
-    <img class="instrument tanpura" src="/images/AudioUI_Tanpura.png" alt="Tanpura">
-    <img class="instrument sitar" src="/images/AudioUI_Sitar.png" alt="Sitar">
-    <img class="instrument pakhawaj" src="/images/AudioUI_Pakhawaj.png" alt="Pakhawaj">
-    <img class="instrument tabla" src="/images/AudioUI_Tabla.png" alt="Tabla">
-    <img class="instrument flute" src="/images/AudioUI_Flute.png" alt="Flute">
+<script>
+    import { base } from '$app/paths';
+</script>
+
+<section class="audio-baithak" aria-label="Baithak scene" style={`--bg-image: url('${base}/images/AudioUI_BG.png');`}>
+    <img class="instrument tanpura" src="{base}/images/AudioUI_Tanpura.png" alt="Tanpura">
+    <img class="instrument sitar" src="{base}/images/AudioUI_Sitar.png" alt="Sitar">
+    <img class="instrument pakhawaj" src="{base}/images/AudioUI_Pakhawaj.png" alt="Pakhawaj">
+    <img class="instrument tabla" src="{base}/images/AudioUI_Tabla.png" alt="Tabla">
+    <img class="instrument flute" src="{base}/images/AudioUI_Flute.png" alt="Flute">
 </section>
 
 <style>
@@ -29,7 +33,7 @@
 
     .audio-baithak::before {
         z-index: 0;
-        background: url('/images/AudioUI_BG.png') center / cover no-repeat;
+        background: var(--bg-image) center / cover no-repeat;
         filter: grayscale(1) contrast(1.06) brightness(1.03);
     }
 

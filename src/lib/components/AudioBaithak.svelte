@@ -1,4 +1,5 @@
 <script>
+    import { base } from '$app/paths';
     import { audioBgDimmed, baithakInstruments } from '$lib/stores.js';
 
     function toggleInstrument(name) {
@@ -20,13 +21,13 @@
 <section
     class="audio-baithak"
     aria-label="Baithak scene"
-    style={`--audio-reactive-opacity: ${$audioBgDimmed ? 0.3 : 0}; --audio-bg-blur: ${$audioBgDimmed ? 5 : 0}px;`}
+    style={`--audio-reactive-opacity: ${$audioBgDimmed ? 0.3 : 0}; --audio-bg-blur: ${$audioBgDimmed ? 5 : 0}px; --bg-image: url('${base}/images/AudioUI_BG.png');`}
 >
-    <img class="instrument tanpura" class:active={$baithakInstruments.tanpura} src="/images/AudioUI_Tanpura.png" alt="Tanpura" role="button" tabindex="0" onclick={() => toggleInstrument('tanpura')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('tanpura')}>
-    <img class="instrument sitar" class:active={$baithakInstruments.sitar} src="/images/AudioUI_Sitar.png" alt="Sitar" role="button" tabindex="0" onclick={() => toggleInstrument('sitar')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('sitar')}>
-    <img class="instrument pakhawaj" class:active={$baithakInstruments.pakhawaj} src="/images/AudioUI_Pakhawaj.png" alt="Pakhawaj" role="button" tabindex="0" onclick={() => toggleInstrument('pakhawaj')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('pakhawaj')}>
-    <img class="instrument tabla" class:active={$baithakInstruments.tabla} src="/images/AudioUI_Tabla.png" alt="Tabla" role="button" tabindex="0" onclick={() => toggleInstrument('tabla')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('tabla')}>
-    <img class="instrument flute" class:active={$baithakInstruments.flute} src="/images/AudioUI_Flute.png" alt="Flute" role="button" tabindex="0" onclick={() => toggleInstrument('flute')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('flute')}>
+    <img class="instrument tanpura" class:active={$baithakInstruments.tanpura} src="{base}/images/AudioUI_Tanpura.png" alt="Tanpura" role="button" tabindex="0" onclick={() => toggleInstrument('tanpura')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('tanpura')}>
+    <img class="instrument sitar" class:active={$baithakInstruments.sitar} src="{base}/images/AudioUI_Sitar.png" alt="Sitar" role="button" tabindex="0" onclick={() => toggleInstrument('sitar')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('sitar')}>
+    <img class="instrument pakhawaj" class:active={$baithakInstruments.pakhawaj} src="{base}/images/AudioUI_Pakhawaj.png" alt="Pakhawaj" role="button" tabindex="0" onclick={() => toggleInstrument('pakhawaj')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('pakhawaj')}>
+    <img class="instrument tabla" class:active={$baithakInstruments.tabla} src="{base}/images/AudioUI_Tabla.png" alt="Tabla" role="button" tabindex="0" onclick={() => toggleInstrument('tabla')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('tabla')}>
+    <img class="instrument flute" class:active={$baithakInstruments.flute} src="{base}/images/AudioUI_Flute.png" alt="Flute" role="button" tabindex="0" onclick={() => toggleInstrument('flute')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('flute')}>
 </section>
 
 <style>
@@ -44,7 +45,7 @@
         position: absolute;
         inset: 0;
         z-index: 0;
-        background-image: url('/images/AudioUI_BG.png');
+        background-image: var(--bg-image);
         background-position: center;
         background-size: cover;
         background-repeat: no-repeat;
