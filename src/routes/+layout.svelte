@@ -181,5 +181,4 @@
     :global(.route-home .ui-frame) {
         border-color: var(--theme-sindoor, #d32f2f);
     }*/
-
 </style>

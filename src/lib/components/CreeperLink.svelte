@@ -79,8 +79,8 @@
                         style="
                         --scale-factor: {orni.type === 'lotus' ? 0.5 : 0.3};
                         --flip-factor: {(orni.type === 'lotus') ? 1 : (orni.flip ? -1 : 1) };
-                        /* Distribute the pop-in delay across the 5 second line draw */
-                        animation-delay: {(i / ornaments.length) * 5}s;
+                        /* Sync with the 0.5s line draw */
+                        animation-delay: {(i / ornaments.length) * 0.5}s;
                     "
                 />
             </g>
@@ -173,7 +173,7 @@
         stroke: var(--current-vine);
         stroke-dasharray: 1000;
         stroke-dashoffset: 1000;
-        animation: dash 5s linear forwards;
+        animation: dash 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
 
     .symbol-lotus, .symbol-flower .bud, .symbol-bud {

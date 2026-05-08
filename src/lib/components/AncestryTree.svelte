@@ -3,6 +3,8 @@
     import * as d3 from 'd3';
     import { onMount, onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
+    import { tweened } from 'svelte/motion';
+    import { cubicOut } from 'svelte/easing';
     import { get } from 'svelte/store';
     import CreeperLink from "$lib/components/CreeperLink.svelte";
     import { currentSeason, defaultSeason, activeRaga, currentLang, audioBgDimmed, isFullTreeMode, baithakInstruments } from '$lib/stores.js';
@@ -25,12 +27,27 @@
     let audioCtx = null;
     let currentSource = null;
     let currentGain = null;
+    let currentAudioElement = null; // Track the <audio> tag for streaming
     let currentAudioUrl = null; // Track URL to prevent re-loading same audio
 
-    const PIZZA_RADIUS = 100;
+    const PIZZA_RADIUS = 110;
     // D3 Zoom Variables
     let svgElement; // Binds to the <svg> tag to capture mouse drags
     let zoomTransform = { x: 0, y: 0, k: 1 }; // Holds the current pan/zoom state [cite: 16]
+
+    // --- SMOOTH STAGE ROTATION SYSTEM ---
+    const globalRotation = tweened(0, {
+        duration: 700,
+        easing: cubicOut
+    });
+
+    function rotateTo(angleRad) {
+        const targetDeg = -(angleRad * 180 / Math.PI);
+        const current = get(globalRotation);
+        // Shortest path logic: find the smallest delta between current and target
+        const delta = ((targetDeg - current + 180) % 360 + 360) % 360 - 180;
+        return globalRotation.set(current + delta);
+    }
 
     // Standard D3 Setup
     // Standard D3 Setup
@@ -129,23 +146,28 @@
     });
 
     function stopRagaAudio(immediate = false) {
-        if (!currentSource || !currentGain) return;
+        if ((!currentSource && !currentAudioElement) || !currentGain) return;
 
         const source = currentSource;
         const gain = currentGain;
+        const audio = currentAudioElement;
+
         currentSource = null;
         currentGain = null;
+        currentAudioElement = null;
         currentAudioUrl = null;
 
         if (immediate) {
-            source.stop();
+            if (audio) audio.pause();
+            if (source && typeof source.stop === 'function') source.stop();
         } else {
             // Fade out
             const now = audioCtx.currentTime;
             gain.gain.linearRampToValueAtTime(gain.gain.value, now);
             gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5); // 1.5s fade
             setTimeout(() => {
-                try { source.stop(); } catch(e) {}
+                if (audio) audio.pause();
+                if (source && typeof source.stop === 'function') try { source.stop(); } catch(e) {}
             }, 1600);
         }
     }
@@ -165,31 +187,32 @@
         }
 
         try {
-            console.log(`[Audio] Fetching gapless buffer: ${url}`);
-            const response = await fetch(url);
-            const arrayBuffer = await response.arrayBuffer();
-            const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-
-            // Create nodes
-            const source = audioCtx.createBufferSource();
+            console.log(`[Audio] Streaming raga: ${url}`);
+            
+            // Create a new Audio element for streaming
+            const audio = new Audio(url);
+            audio.loop = true;
+            audio.crossOrigin = "anonymous"; // Important for Web Audio connection
+            
+            // Connect to Web Audio API for gain control
+            const source = audioCtx.createMediaElementSource(audio);
             const gain = audioCtx.createGain();
 
-            source.buffer = audioBuffer;
-            source.loop = true;
-            
-            // Fading logic
             gain.gain.setValueAtTime(0, audioCtx.currentTime);
             source.connect(gain);
             gain.connect(audioCtx.destination);
 
-            source.start(0);
-            gain.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 1.5); // 1.5s fade in
+            // Play and Fade in
+            await audio.play();
+            gain.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 1.5);
 
+            currentAudioElement = audio;
             currentSource = source;
             currentGain = gain;
-            console.log(`[Audio] Gapless playback started: ${url}`);
+            
+            console.log(`[Audio] Streaming playback started: ${url}`);
         } catch (err) {
-            console.error(`[Audio] Failed to load gapless raga: ${url}`, err);
+            console.error(`[Audio] Failed to stream raga: ${url}`, err);
             currentAudioUrl = null;
         }
     }
@@ -220,9 +243,9 @@
         }
     }
 
-    // React to Window Resizes!
-    // Whenever the browser changes size or nodes open, redraw the tree to fill the new space
-    $: if (containerWidth && containerHeight && hierarchyNode) {
+    // React to Window Resizes or Rotation!
+    // Whenever the browser changes size, nodes open, or the wheel rotates, redraw the tree to fill the new space
+    $: if (containerWidth && containerHeight && hierarchyNode && $globalRotation !== undefined) {
         updateTree();
     }
     // Reactive statement: When the language changes, redraw the tree!
@@ -256,7 +279,7 @@
         // Calculate safe padding so avatars don't clip off the screen
         const safeWidth = (containerWidth / 2) - 80;
         const safeHeight = (containerHeight / 2) - 80;
-        const startDistance = PIZZA_RADIUS + 80; // Where the 1st generation starts
+        const startDistance = PIZZA_RADIUS + 80; // Where the 1st generation starts (110 + 80 = 190)
 
         root.each(d => {
             if (d.depth === 0) {
@@ -264,11 +287,14 @@
                 return;
             }
 
-            // Find the absolute maximum distance a node can travel at its specific angle
+            // --- THE TRUE RECTANGULAR BOUNDARY ALGORITHM (SCREEN-SPACE) ---
+            // Find the absolute maximum distance a node can travel at its VISUAL angle
             // before it hits the literal edge of the browser window.
+            const visualX = d.x + ($globalRotation * Math.PI / 180);
+
             let maxR = Math.min(
-                safeWidth / (Math.abs(Math.sin(d.x)) || 0.001),
-                safeHeight / (Math.abs(Math.cos(d.x)) || 0.001)
+                safeWidth / (Math.abs(Math.sin(visualX)) || 0.001),
+                safeHeight / (Math.abs(Math.cos(visualX)) || 0.001)
             );
 
             // Enforce a MINIMUM radial gap of 150px per generation so they NEVER overlap radially!
@@ -288,49 +314,37 @@
     }
 
     function toggleNode(d) {
-        // Update the global store based on what was clicked!
+        if (!d) return;
+
+        // --- 1. Initial State & Store Updates ---
+        const isExpanding = !d.children && !!d._children;
+        const isCollapsing = !!d.children;
+        
+        $activeRaga = d.data;
         if (d.depth === 0) {
-            $currentSeason = 'Vasanta'; // Or default
+            $currentSeason = 'Vasanta';
+            rotateTo(0);
         } else {
             $currentSeason = d.data.season;
         }
 
-        // We only save d.data (the clean JSON), not the whole complex D3 node
-        $activeRaga = d.data;
-
-        if (!$isFullTreeMode) {
-            // --- EXCLUSIVE COLLAPSE LOGIC (NORMAL MODE) ---
-            if (d.depth === 1) {
-                root.children.forEach(sibling => {
-                    if (sibling !== d && sibling.children) {
-                        sibling._children = sibling.children;
-                        sibling.children = null;
-                    }
-                });
-            }
+        // --- 2. Exclusive Logic (Immediate Collapse of others) ---
+        if (!$isFullTreeMode && d.depth === 1) {
+            root.children?.forEach(sibling => {
+                if (sibling !== d && sibling.children) {
+                    sibling._children = sibling.children;
+                    sibling.children = null;
+                }
+            });
         }
 
-        let isExpanding = false;
-        if (d.children) {
-            d._children = d.children;
-            d.children = null;
-            isExpanding = false;
-        } else if (d._children) {
-            d.children = d._children;
-            d._children = null;
-            isExpanding = true;
-        }
-
-        // --- RAGA AUDIO TRIGGER ---
-        // Note: Playback is now handled reactively by the block above!
-        // We just need to handle instrument states here.
+        // --- 3. Instrument Sync (Immediate Feedback) ---
         if (d.depth === 1) {
             const ragaName = d.data.name.toLowerCase();
             const mainRagas = ['bhairav', 'malkauns', 'hindol', 'sri', 'megh', 'dipak'];
             
             if (mainRagas.includes(ragaName)) {
                 if (isExpanding) {
-                    // --- BAITHAK INSTRUMENT SYNC ---
                     const isSri = ragaName === 'sri';
                     baithakInstruments.set({
                         tanpura: true,
@@ -340,7 +354,6 @@
                         flute: false
                     });
                 } else {
-                    // --- BAITHAK INSTRUMENT CLEAR ---
                     baithakInstruments.set({
                         tanpura: false,
                         sitar: false,
@@ -352,7 +365,29 @@
             }
         }
 
-        updateTree();
+        // --- 4. Choreographed Animation Flow ---
+        if (d.depth === 1 && isExpanding) {
+            // RAGA LEVEL: Rotate first, blossom later
+            rotateTo(d.x).then(() => {
+                // Safety check: ensure this is still the active raga
+                if ($activeRaga && $activeRaga.name === d.data.name) {
+                    d.children = d._children;
+                    d._children = null;
+                    updateTree();
+                }
+            }).catch(() => {});
+        } else {
+            // COLLAPSE or SUB-LEVEL: Immediate change for snappiness
+            if (d.children) {
+                d._children = d.children;
+                d.children = null;
+                if (d.depth === 1) rotateTo(0);
+            } else if (d._children) {
+                d.children = d._children;
+                d._children = null;
+            }
+            updateTree();
+        }
     }
 
     // --- THE PIZZA HUB ALGORITHM ---
@@ -531,7 +566,7 @@
         </defs>
 
         {#if root}
-            <g transform="translate({zoomTransform.x}, {zoomTransform.y}) scale({zoomTransform.k})">
+            <g transform="translate({zoomTransform.x}, {zoomTransform.y}) scale({zoomTransform.k}) rotate({$globalRotation})">
             <g class="links">
                 {#each root.links() as link (link.target.data.name)}
                     <CreeperLink pathData={linkGen(link)} ragaData={link.target.data} />
@@ -582,39 +617,42 @@
                             transform="rotate({(node.x * 180) / Math.PI - 90}) translate({node.y},0)"
                             on:click={() => toggleNode(node)}
                             style="cursor: pointer; pointer-events: auto;"
-                    >
-                        {#if $activeRaga && $activeRaga.name === node.data.name}
-                            <circle class="true-halo" cx="0" cy="0" filter="url(#soft-glow)" />
-                        {/if}
-
-                        <image href="{base}/avatar.png" x="-20" y="-20" width="40" height="40" clip-path="url(#avatar-clip)" />
-
-                        <circle r="20" fill="none" stroke={node.data.type === 'parent' ? '#d32f2f' : `var(--${node.data.season.toLowerCase()}-${Math.min(node.depth, 7)})`} stroke-width="3" />
-
-                        <!-- The Glowing Aura (Rendered Behind) -->
-                        <text
-                                dy="0.31em"
-                                x={node.x < Math.PI ? 48 : -48}
-                                text-anchor={node.x < Math.PI ? "start" : "end"}
-                                transform={node.x >= Math.PI ? "rotate(180)" : null}
-                                class="raga-label-glow"
-                        >
-                            {node.data.i18n?.[$currentLang]?.name || node.data.name}
-                        </text>
-
-                        <!-- The Crisp Text (Rendered on Top) -->
-                        <text
-                                dy="0.31em"
-                                x={node.x < Math.PI ? 48 : -48}
-                                text-anchor={node.x < Math.PI ? "start" : "end"}
-                                transform={node.x >= Math.PI ? "rotate(180)" : null}
-                                class="raga-label"
-                        >
-                            {node.data.i18n?.[$currentLang]?.name || node.data.name}
-                        </text>
-                    </g>
-                {/if}
-            {/each}
+                            in:scale|local={{start: 0, duration: 500, delay: 100}}
+                            out:fade|local={{duration: 300}}
+                     >
+                         {#if $activeRaga && $activeRaga.name === node.data.name}
+                             <circle class="true-halo" cx="0" cy="0" filter="url(#soft-glow)" />
+                         {/if}
+ 
+                         <!-- Counter-rotate contents so they stay upright relative to the screen -->
+                         <g transform="rotate({90 - (node.x * 180) / Math.PI - $globalRotation})">
+                             <image href="{base}/avatar.png" x="-20" y="-20" width="40" height="40" clip-path="url(#avatar-clip)" />
+                             
+                             <circle r="20" fill="none" stroke={node.data.type === 'parent' ? '#d32f2f' : `var(--${node.data.season.toLowerCase()}-${Math.min(node.depth, 7)})`} stroke-width="3" />
+ 
+                             <!-- The Glowing Aura (Rendered Behind) -->
+                             <text
+                                     dy="0.31em"
+                                     x="28"
+                                     text-anchor="start"
+                                     class="raga-label-glow"
+                             >
+                                 {node.data.i18n?.[$currentLang]?.name || node.data.name}
+                             </text>
+ 
+                             <!-- The Crisp Text (Rendered on Top) -->
+                             <text
+                                     dy="0.31em"
+                                     x="28"
+                                     text-anchor="start"
+                                     class="raga-label"
+                             >
+                                 {node.data.i18n?.[$currentLang]?.name || node.data.name}
+                             </text>
+                         </g>
+                     </g>
+                 {/if}
+             {/each}
             </g>
         {/if}
     </svg>
@@ -664,16 +702,16 @@
 
     /* --- CONDITIONAL ANIMATION SYSTEM --- */
     .animate-tree .pizza-root path {
-        transition: d 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        transition: d 0.5s cubic-bezier(0.25, 1, 0.5, 1);
     }
     .animate-tree image {
-        transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), width 1.2s cubic-bezier(0.25, 1, 0.5, 1), x 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), width 0.5s cubic-bezier(0.25, 1, 0.5, 1), x 0.5s cubic-bezier(0.25, 1, 0.5, 1);
     }
     .animate-tree .links path {
-        transition: d 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        transition: d 0.5s cubic-bezier(0.25, 1, 0.5, 1);
     }
     .animate-tree .node {
-        transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     .pizza-root {
