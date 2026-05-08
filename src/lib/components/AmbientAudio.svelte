@@ -4,16 +4,37 @@
     import { onMount, onDestroy } from "svelte";
     import { page } from "$app/state";
 
-    let audioElements = {};
-    let activeAudio = null;
-    let fadeInterval = null;
+    let audioContext = null;
+    let audioBuffers = {};
+    let activeSource = null;
+    let activeGain = null;
 
-    // Reactively monitor the page URL. If we are on /family-tree, fade out!
+    async function initAudio() {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+        }
+    }
+
+    async function loadAudioBuffer(url) {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        return await audioContext.decodeAudioData(arrayBuffer);
+    }
+
+    // Determine if we are on the homepage or a specific page
+    const isHomePage = $derived(page.url.pathname === base || page.url.pathname === base + '/');
+    const isFamilyTree = $derived(page.url.pathname.includes('/family-tree'));
+    const isArLens = $derived(page.url.pathname.includes('/ar-lens'));
+
+    // Reactively monitor the page URL.
     $effect(() => {
-        if (typeof window !== "undefined") {
-            if (page.url.pathname === "/family-tree") {
+        if (typeof window !== 'undefined') {
+            if (isFamilyTree || isArLens) {
                 fadeOutAll(5000);
-            } else if (page.url.pathname === "/") {
+            } else if (isHomePage) {
                 if ($currentSeason) {
                     crossfadeTo($currentSeason);
                 }
@@ -23,105 +44,105 @@
 
     // Also react to season changes if we are on the home page
     $effect(() => {
-        if (
-            typeof window !== "undefined" &&
-            page.url.pathname === "/" &&
-            $currentSeason
-        ) {
+        if (typeof window !== 'undefined' && isHomePage && $currentSeason) {
             crossfadeTo($currentSeason);
         }
     });
 
-    function crossfadeTo(seasonName) {
+    async function crossfadeTo(seasonName) {
         if (!seasonName) return;
-
-        if (!audioElements[seasonName]) {
-            const audio = new Audio(
-                `${base}/audio/${seasonName.toLowerCase()}.mp3`,
-            );
-            audio.loop = true;
-            audio.volume = 0;
-            audioElements[seasonName] = audio;
+        
+        try {
+            await initAudio();
+        } catch (e) {
+            console.warn("Ambient Audio Autoplay Blocked.", e);
+            const unlockAudio = () => {
+                crossfadeTo($currentSeason);
+                window.removeEventListener('pointerdown', unlockAudio);
+            };
+            window.addEventListener('pointerdown', unlockAudio, { once: true });
+            return;
         }
 
-        const newAudio = audioElements[seasonName];
-        if (activeAudio === newAudio && !newAudio.paused) return;
+        const url = `${base}/audio/${seasonName.toLowerCase()}.mp3`;
 
-        if (fadeInterval) {
-            clearInterval(fadeInterval);
-            fadeInterval = null;
+        if (!audioBuffers[seasonName]) {
+            try {
+                audioBuffers[seasonName] = await loadAudioBuffer(url);
+            } catch (err) {
+                console.error("Error loading ambient audio", err);
+                return;
+            }
         }
+
+        // Check if this season's buffer is already active
+        if (activeSource && activeSource.buffer === audioBuffers[seasonName]) return;
+
+        const buffer = audioBuffers[seasonName];
+        
+        const gainNode = audioContext.createGain();
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.connect(audioContext.destination);
+        
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+        source.connect(gainNode);
+        
+        source.start(0);
 
         // Fade out previous
-        if (activeAudio && activeAudio !== newAudio) {
-            const old = activeAudio;
-            let vol = old.volume;
-            const fadeOut = setInterval(() => {
-                if (vol > 0.05) {
-                    vol -= 0.05;
-                    old.volume = vol;
-                } else {
-                    old.pause();
-                    clearInterval(fadeOut);
-                }
-            }, 100);
+        if (activeGain && activeSource) {
+            const oldGain = activeGain;
+            const oldSource = activeSource;
+            oldGain.gain.setValueAtTime(oldGain.gain.value, audioContext.currentTime);
+            oldGain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 5);
+            
+            setTimeout(() => {
+                try { oldSource.stop(); } catch(e) {}
+                oldSource.disconnect();
+                oldGain.disconnect();
+            }, 5000);
         }
 
-        activeAudio = newAudio;
-        activeAudio
-            .play()
-            .then(() => {
-                let vol = activeAudio.volume;
-                fadeInterval = setInterval(() => {
-                    if (vol < 0.95) {
-                        vol += 0.05;
-                        activeAudio.volume = vol;
-                    } else {
-                        activeAudio.volume = 1;
-                        clearInterval(fadeInterval);
-                        fadeInterval = null;
-                    }
-                }, 100);
-            })
-            .catch((err) => {
-                console.warn("Ambient Audio Autoplay Blocked.");
-                activeAudio = null;
-                const unlockAudio = () => {
-                    crossfadeTo($currentSeason);
-                    window.removeEventListener("pointerdown", unlockAudio);
-                };
-                window.addEventListener("pointerdown", unlockAudio);
-            });
+        // Fade in new
+        gainNode.gain.linearRampToValueAtTime(1, audioContext.currentTime + 5);
+
+        activeSource = source;
+        activeGain = gainNode;
     }
 
     function fadeOutAll(durationMs) {
-        if (!activeAudio || activeAudio.paused) return;
-
-        if (fadeInterval) {
-            clearInterval(fadeInterval);
-            fadeInterval = null;
-        }
-
-        let vol = activeAudio.volume;
-        const steps = 50;
-        const stepTime = durationMs / steps;
-        const volStep = vol / steps;
-
-        fadeInterval = setInterval(() => {
-            if (vol > volStep) {
-                vol -= volStep;
-                activeAudio.volume = vol;
-            } else {
-                activeAudio.volume = 0;
-                activeAudio.pause();
-                clearInterval(fadeInterval);
-                fadeInterval = null;
-                activeAudio = null;
+        if (!activeGain || !activeSource) return;
+        
+        const durationSec = durationMs / 1000;
+        
+        activeGain.gain.setValueAtTime(activeGain.gain.value, audioContext.currentTime);
+        activeGain.gain.linearRampToValueAtTime(0, audioContext.currentTime + durationSec);
+        
+        const sourceToStop = activeSource;
+        const gainToDisconnect = activeGain;
+        
+        setTimeout(() => {
+            if (sourceToStop) {
+                try { sourceToStop.stop(); } catch (e) {}
+                sourceToStop.disconnect();
             }
-        }, stepTime);
+            if (gainToDisconnect) gainToDisconnect.disconnect();
+        }, durationMs);
+        
+        activeSource = null;
+        activeGain = null;
     }
 
     onDestroy(() => {
-        if (activeAudio) activeAudio.pause();
+        if (activeSource) {
+            try { activeSource.stop(); } catch (e) {}
+            activeSource.disconnect();
+        }
+        if (activeGain) activeGain.disconnect();
+        if (audioContext && audioContext.state !== 'closed') {
+            audioContext.close();
+        }
     });
 </script>

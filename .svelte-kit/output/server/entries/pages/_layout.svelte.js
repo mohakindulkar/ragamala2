@@ -48,13 +48,13 @@ function AmbientAudio($$renderer, $$props) {
 function _layout($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let { children } = $$props;
-    let currentRouteClass = derived(() => page.route.id === "/" ? "route-home" : `route-${(page.route.id || "").replace(/^\//, "").replace(/\//g, "-")}`);
+    let currentRouteClass = derived(() => page.url.pathname === "/" ? "route-home" : `route-${page.url.pathname.replace(/^\//, "").replace(/\//g, "-")}`);
     head("12qhfyh", $$renderer2, ($$renderer3) => {
       $$renderer3.push(`<link rel="icon"${attr("href", favicon)}/>`);
     });
     $$renderer2.push(`<div${attr_class(`app-wrapper ${stringify(currentRouteClass())}`, "svelte-12qhfyh")}>`);
     Navigation($$renderer2);
-    $$renderer2.push(`<!----> <div${attr_class(`ui-frame ${stringify(currentRouteClass())}`, "svelte-12qhfyh")}><div class="edge border-top svelte-12qhfyh"></div> <div class="edge border-bottom svelte-12qhfyh"></div> <div class="edge border-left svelte-12qhfyh"></div> <div class="edge border-right svelte-12qhfyh"></div> <div class="corner corner-image top-left svelte-12qhfyh"></div> <div class="corner corner-image top-right svelte-12qhfyh"></div> <div class="corner corner-image bottom-left svelte-12qhfyh"></div> <div class="corner corner-image bottom-right svelte-12qhfyh"></div></div> <div class="widget-layer svelte-12qhfyh"><div class="translate-container svelte-12qhfyh">`);
+    $$renderer2.push(`<!----> <div class="widget-layer svelte-12qhfyh"><div class="translate-container svelte-12qhfyh">`);
     GoogleTranslate($$renderer2);
     $$renderer2.push(`<!----></div></div> <main class="page-content svelte-12qhfyh">`);
     children($$renderer2);
