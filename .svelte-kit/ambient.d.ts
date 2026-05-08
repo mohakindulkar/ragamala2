@@ -39,13 +39,14 @@
  */
 declare module '$env/static/private' {
 	export const ALLUSERSPROFILE: string;
-	export const ANTIGRAVITY_CLI_ALIAS: string;
+	export const ANTIGRAVITY_AGENT: string;
+	export const ANTIGRAVITY_EDITOR_APP_ROOT: string;
+	export const ANTIGRAVITY_TRAJECTORY_ID: string;
 	export const APPDATA: string;
 	export const ChocolateyInstall: string;
 	export const ChocolateyLastPathUpdate: string;
 	export const CHROME_CRASHPAD_PIPE_NAME: string;
 	export const COLOR: string;
-	export const COLORTERM: string;
 	export const CommonProgramFiles: string;
 	export const CommonProgramW6432: string;
 	export const COMPUTERNAME: string;
@@ -65,7 +66,6 @@ declare module '$env/static/private' {
 	export const IGCCSVC_DB: string;
 	export const INIT_CWD: string;
 	export const INTEL_DEV_REDIST: string;
-	export const LANG: string;
 	export const LEVEL_ZERO_V1_SDK_PATH: string;
 	export const LOCALAPPDATA: string;
 	export const LOGONSERVER: string;
@@ -115,17 +115,16 @@ declare module '$env/static/private' {
 	export const SystemDrive: string;
 	export const SystemRoot: string;
 	export const TEMP: string;
-	export const TERM_PROGRAM: string;
-	export const TERM_PROGRAM_VERSION: string;
 	export const TMP: string;
 	export const USERDOMAIN: string;
 	export const USERDOMAIN_ROAMINGPROFILE: string;
 	export const USERNAME: string;
 	export const USERPROFILE: string;
-	export const VSCODE_A11Y_MODE: string;
-	export const VSCODE_INJECTION: string;
-	export const VSCODE_NONCE: string;
-	export const VSCODE_STABLE: string;
+	export const VSCODE_CODE_CACHE_PATH: string;
+	export const VSCODE_CWD: string;
+	export const VSCODE_IPC_HOOK: string;
+	export const VSCODE_NLS_CONFIG: string;
+	export const VSCODE_PID: string;
 	export const windir: string;
 	export const ZES_ENABLE_SYSMAN: string;
 }
@@ -215,13 +214,14 @@ declare module '$env/static/public' {
 declare module '$env/dynamic/private' {
 	export const env: {
 		ALLUSERSPROFILE: string;
-		ANTIGRAVITY_CLI_ALIAS: string;
+		ANTIGRAVITY_AGENT: string;
+		ANTIGRAVITY_EDITOR_APP_ROOT: string;
+		ANTIGRAVITY_TRAJECTORY_ID: string;
 		APPDATA: string;
 		ChocolateyInstall: string;
 		ChocolateyLastPathUpdate: string;
 		CHROME_CRASHPAD_PIPE_NAME: string;
 		COLOR: string;
-		COLORTERM: string;
 		CommonProgramFiles: string;
 		CommonProgramW6432: string;
 		COMPUTERNAME: string;
@@ -241,7 +241,6 @@ declare module '$env/dynamic/private' {
 		IGCCSVC_DB: string;
 		INIT_CWD: string;
 		INTEL_DEV_REDIST: string;
-		LANG: string;
 		LEVEL_ZERO_V1_SDK_PATH: string;
 		LOCALAPPDATA: string;
 		LOGONSERVER: string;
@@ -291,17 +290,16 @@ declare module '$env/dynamic/private' {
 		SystemDrive: string;
 		SystemRoot: string;
 		TEMP: string;
-		TERM_PROGRAM: string;
-		TERM_PROGRAM_VERSION: string;
 		TMP: string;
 		USERDOMAIN: string;
 		USERDOMAIN_ROAMINGPROFILE: string;
 		USERNAME: string;
 		USERPROFILE: string;
-		VSCODE_A11Y_MODE: string;
-		VSCODE_INJECTION: string;
-		VSCODE_NONCE: string;
-		VSCODE_STABLE: string;
+		VSCODE_CODE_CACHE_PATH: string;
+		VSCODE_CWD: string;
+		VSCODE_IPC_HOOK: string;
+		VSCODE_NLS_CONFIG: string;
+		VSCODE_PID: string;
 		windir: string;
 		ZES_ENABLE_SYSMAN: string;
 		[key: `PUBLIC_${string}`]: undefined;

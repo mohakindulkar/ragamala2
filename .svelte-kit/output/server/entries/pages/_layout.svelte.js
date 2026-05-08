@@ -48,7 +48,7 @@ function AmbientAudio($$renderer, $$props) {
 function _layout($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let { children } = $$props;
-    let currentRouteClass = derived(() => page.url.pathname === "/" ? "route-home" : `route-${page.url.pathname.replace(/^\//, "").replace(/\//g, "-")}`);
+    let currentRouteClass = derived(() => page.route.id === "/" ? "route-home" : `route-${(page.route.id || "").replace(/^\//, "").replace(/\//g, "-")}`);
     head("12qhfyh", $$renderer2, ($$renderer3) => {
       $$renderer3.push(`<link rel="icon"${attr("href", favicon)}/>`);
     });
