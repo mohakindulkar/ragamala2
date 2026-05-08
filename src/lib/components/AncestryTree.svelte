@@ -1,73 +1,38 @@
 <script>
     import { base } from '$app/paths';
     import * as d3 from 'd3';
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     import { get } from 'svelte/store';
-    import { innerWidth, innerHeight } from 'svelte/reactivity/window';
     import CreeperLink from "$lib/components/CreeperLink.svelte";
-    import { currentSeason, defaultSeason, activeRaga, currentLang } from '$lib/stores.js';
-    import AudioEngine from '$lib/components/AudioEngine.svelte';
+    import { currentSeason, defaultSeason, activeRaga, currentLang, audioBgDimmed, isFullTreeMode, baithakInstruments } from '$lib/stores.js';
     // Track the active node when a user clicks
 
     export let data;
 
     // Svelte tracks the real browser dimensions
-    let containerWidth = innerWidth;
-    let containerHeight = innerHeight;
+    // Fixed NaN crash by providing defaults until Svelte binds them
+    let containerWidth = 1000;
+    let containerHeight = 800;
     let currentLanguage = $currentLang;
 
     let hierarchyNode = null;
     let root = null;
     let activeNode = null;
     let allNodesFlat = [];
-    let isMusicPlaying = false;
-
-    // --- NEW: BOUND AUDIO CONTROLS ---
-    let currentBpm = 80;
-    let complexity = 0.5;
-    let swingAmount = 0.3;
-    let melodyVol = -8;
-    let audioLevel = 0;
-
-    // --- NEW: SVG RING DRAG LOGIC ---
-    let draggingRing = null;
-    let startY = 0;
-    let startVal = 0;
-
-    function startRingDrag(e, paramName, currentVal) {
-        e.stopPropagation(); // CRUCIAL: Stops D3 from panning the whole canvas!
-        draggingRing = paramName;
-        startY = e.clientY || e.touches[0].clientY;
-        startVal = currentVal;
-
-        window.addEventListener('mousemove', onRingDrag);
-        window.addEventListener('mouseup', endRingDrag);
-    }
-
-    function onRingDrag(e) {
-        if (!draggingRing) return;
-        const currentY = e.clientY || e.touches[0].clientY;
-        const delta = startY - currentY; // Moving mouse UP increases the value
-
-        // Adjust sensitivity based on the parameter's min/max range
-        if (draggingRing === 'bpm') currentBpm = Math.max(40, Math.min(180, startVal + delta));
-        if (draggingRing === 'complexity') complexity = Math.max(0.1, Math.min(1.0, startVal + (delta / 200)));
-        if (draggingRing === 'swing') swingAmount = Math.max(0, Math.min(0.8, startVal + (delta / 200)));
-        if (draggingRing === 'vol') melodyVol = Math.max(-40, Math.min(10, startVal + (delta / 5)));
-    }
-
-    function endRingDrag() {
-        draggingRing = null;
-        window.removeEventListener('mousemove', onRingDrag);
-        window.removeEventListener('mouseup', endRingDrag);
-    }
+    
+    // Gapless Audio System (Web Audio API)
+    let audioCtx = null;
+    let currentSource = null;
+    let currentGain = null;
+    let currentAudioUrl = null; // Track URL to prevent re-loading same audio
 
     const PIZZA_RADIUS = 100;
     // D3 Zoom Variables
     let svgElement; // Binds to the <svg> tag to capture mouse drags
     let zoomTransform = { x: 0, y: 0, k: 1 }; // Holds the current pan/zoom state [cite: 16]
 
+    // Standard D3 Setup
     // Standard D3 Setup
     const tree = d3.tree()
         .size([2 * Math.PI, 1])
@@ -135,6 +100,8 @@
         collapseAll(hierarchyNode);
         updateTree();
 
+
+
         // Initialize D3 Zoom and Pan
         const zoomBehavior = d3.zoom()
             .scaleExtent([0.3, 3]) // Allow zooming out to 30% and in to 300%
@@ -144,7 +111,114 @@
 
         // Attach the zoom behavior to the SVG element
         d3.select(svgElement).call(zoomBehavior);
+        
+        // Apply initial transform: 10% up and 10% increased in size
+        const initialTransform = d3.zoomIdentity
+            .translate(0, -containerHeight * 0.1)
+            .scale(1.1);
+        d3.select(svgElement).call(zoomBehavior.transform, initialTransform);
     });
+
+    onDestroy(() => {
+        audioBgDimmed.set(false);
+        stopRagaAudio(true); // Immediate stop
+        if (audioCtx) {
+            audioCtx.close();
+            audioCtx = null;
+        }
+    });
+
+    function stopRagaAudio(immediate = false) {
+        if (!currentSource || !currentGain) return;
+
+        const source = currentSource;
+        const gain = currentGain;
+        currentSource = null;
+        currentGain = null;
+        currentAudioUrl = null;
+
+        if (immediate) {
+            source.stop();
+        } else {
+            // Fade out
+            const now = audioCtx.currentTime;
+            gain.gain.linearRampToValueAtTime(gain.gain.value, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5); // 1.5s fade
+            setTimeout(() => {
+                try { source.stop(); } catch(e) {}
+            }, 1600);
+        }
+    }
+
+    async function playRagaAudio(url) {
+        if (currentAudioUrl === url) return; // Already playing this
+        
+        stopRagaAudio(true); // Stop previous immediately
+        currentAudioUrl = url;
+
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        if (audioCtx.state === 'suspended') {
+            await audioCtx.resume();
+        }
+
+        try {
+            console.log(`[Audio] Fetching gapless buffer: ${url}`);
+            const response = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+            // Create nodes
+            const source = audioCtx.createBufferSource();
+            const gain = audioCtx.createGain();
+
+            source.buffer = audioBuffer;
+            source.loop = true;
+            
+            // Fading logic
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            source.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            source.start(0);
+            gain.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 1.5); // 1.5s fade in
+
+            currentSource = source;
+            currentGain = gain;
+            console.log(`[Audio] Gapless playback started: ${url}`);
+        } catch (err) {
+            console.error(`[Audio] Failed to load gapless raga: ${url}`, err);
+            currentAudioUrl = null;
+        }
+    }
+
+    // --- REACTIVE AUDIO MODE SWITCHING ---
+    // Automatically switch between normal and flute versions of the raga audio
+    $: if (hierarchyNode && $activeRaga) {
+        const ragaName = $activeRaga.name.toLowerCase();
+        const mainRagas = ['bhairav', 'malkauns', 'hindol', 'sri', 'megh', 'dipak'];
+        
+        if (mainRagas.includes(ragaName)) {
+            // Check if we are currently "expanded" (this is tracked by looking at the node in hierarchyNode)
+            const node = allNodesFlat.find(n => n.data.name === $activeRaga.name);
+            
+            if (node && node.children) {
+                // Sound only plays if at least one lead instrument (Sitar or Flute) is active
+                if (!$baithakInstruments.sitar && !$baithakInstruments.flute) {
+                    stopRagaAudio(false);
+                } else {
+                    const suffix = $baithakInstruments.flute ? 'flute' : '';
+                    const audioPath = `${base}/audio/${ragaName}${suffix}-audio.wav`;
+                    playRagaAudio(audioPath);
+                }
+            } else {
+                // If the raga node exists but is collapsed, ensure audio is stopped
+                stopRagaAudio(false);
+            }
+        }
+    }
 
     // React to Window Resizes!
     // Whenever the browser changes size or nodes open, redraw the tree to fill the new space
@@ -157,8 +231,26 @@
     function updateTree() {
         currentLanguage = $currentLang;
         if (!hierarchyNode) return;
+        
         root = tree(hierarchyNode);
         const maxVisibleDepth = root.height;
+
+        if (!$isFullTreeMode) {
+            // --- STRICT ANGLE LOCKING ALGORITHM (NORMAL MODE) ---
+            root.each(d => {
+                if (d.depth === 1) {
+                    const i = d.parent.children.indexOf(d);
+                    const numSiblings = d.parent.children.length;
+                    const fixedX = (i * 2 * Math.PI) / numSiblings;
+                    d.offset = fixedX - d.x;
+                    d.x = fixedX;
+                } else if (d.depth > 1) {
+                    let ancestor = d;
+                    while (ancestor.depth > 1) { ancestor = ancestor.parent; }
+                    d.x += ancestor.offset;
+                }
+            });
+        }
 
         // --- THE TRUE RECTANGULAR BOUNDARY ALGORITHM ---
         // Calculate safe padding so avatars don't clip off the screen
@@ -206,30 +298,69 @@
         // We only save d.data (the clean JSON), not the whole complex D3 node
         $activeRaga = d.data;
 
-        // --- EXCLUSIVE COLLAPSE LOGIC ---
-        // If clicking a level-1 node (a main Raga like Bhairav), collapse all other siblings
-        if (d.depth === 1) {
-            root.children.forEach(sibling => {
-                if (sibling !== d && sibling.children) {
-                    sibling._children = sibling.children;
-                    sibling.children = null;
-                }
-            });
+        if (!$isFullTreeMode) {
+            // --- EXCLUSIVE COLLAPSE LOGIC (NORMAL MODE) ---
+            if (d.depth === 1) {
+                root.children.forEach(sibling => {
+                    if (sibling !== d && sibling.children) {
+                        sibling._children = sibling.children;
+                        sibling.children = null;
+                    }
+                });
+            }
         }
 
+        let isExpanding = false;
         if (d.children) {
             d._children = d.children;
             d.children = null;
+            isExpanding = false;
         } else if (d._children) {
             d.children = d._children;
             d._children = null;
+            isExpanding = true;
         }
+
+        // --- RAGA AUDIO TRIGGER ---
+        // Note: Playback is now handled reactively by the block above!
+        // We just need to handle instrument states here.
+        if (d.depth === 1) {
+            const ragaName = d.data.name.toLowerCase();
+            const mainRagas = ['bhairav', 'malkauns', 'hindol', 'sri', 'megh', 'dipak'];
+            
+            if (mainRagas.includes(ragaName)) {
+                if (isExpanding) {
+                    // --- BAITHAK INSTRUMENT SYNC ---
+                    const isSri = ragaName === 'sri';
+                    baithakInstruments.set({
+                        tanpura: true,
+                        sitar: true,
+                        pakhawaj: isSri,
+                        tabla: !isSri,
+                        flute: false
+                    });
+                } else {
+                    // --- BAITHAK INSTRUMENT CLEAR ---
+                    baithakInstruments.set({
+                        tanpura: false,
+                        sitar: false,
+                        pakhawaj: false,
+                        tabla: false,
+                        flute: false
+                    });
+                }
+            }
+        }
+
         updateTree();
     }
 
     // --- THE PIZZA HUB ALGORITHM ---
     // Grabs the 1st level nodes (whether visible or hidden) to track their exact rotation
     $: activeFirstLevel = (root && root.children) ? root.children : (root && root._children ? root._children : []);
+        
+    // Toggle AudioUI reactive color overlay when root is expanded and ragas are visible.
+    $: audioBgDimmed.set(Boolean(root?.children?.length));
 
     // 1. Define the specific image for each deity/season
     const seasonImages = {
@@ -321,13 +452,56 @@
             }, 1500);
         }
     }
+
+    function toggleFullTreeMode() {
+        $isFullTreeMode = !$isFullTreeMode;
+
+        if ($isFullTreeMode) {
+            // EXPAND ALL
+            function expandAll(d) {
+                if (d._children) {
+                    d.children = d._children;
+                    d._children = null;
+                }
+                if (d.children) d.children.forEach(expandAll);
+            }
+            expandAll(hierarchyNode);
+        } else {
+            // COLLAPSE ALL
+            function collapseAll(d) {
+                if (d.children) {
+                    d._children = d.children;
+                    d.children = null;
+                }
+                if (d._children) d._children.forEach(collapseAll);
+            }
+            if (hierarchyNode.children) hierarchyNode.children.forEach(collapseAll);
+            else if (hierarchyNode._children) hierarchyNode._children.forEach(collapseAll);
+        }
+        updateTree();
+    }
 </script>
 
 <div class="tree-container"
+     class:animate-tree={$isFullTreeMode}
      bind:clientWidth={containerWidth}
      bind:clientHeight={containerHeight}
-     style="--bg-color: var(--{$currentSeason.toLowerCase()}-bg, #f4ece1); background-color: var(--bg-color); transition: background-color 1s ease;"
+     style="--bg-color: var(--{$currentSeason.toLowerCase()}-bg, #f4ece1);"
 >
+
+    <!-- FULL TREE TOGGLE BUTTON -->
+    <button class="expand-btn" class:active={$isFullTreeMode} on:click={toggleFullTreeMode} aria-label="Toggle Full Tree">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+            {#if $isFullTreeMode}
+                <!-- Collapse Icon -->
+                <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
+            {:else}
+                <!-- Expand Icon -->
+                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+            {/if}
+        </svg>
+    </button>
+
     <div class="translation-matrix" style="position: absolute; opacity: 0; pointer-events: none; z-index: -1;" aria-hidden="true">
         {#each allNodesFlat as node}
             <span id="trans-name-{node.data.name}">{node.data.name}</span>
@@ -342,7 +516,7 @@
             width="100%"
             height="100%"
             viewBox="-{containerWidth/2} -{containerHeight/2} {containerWidth} {containerHeight}"
-            style="cursor: grab;"
+            style="cursor: grab; pointer-events: none;"
     >
         <defs>
             <clipPath id="avatar-clip">
@@ -351,7 +525,7 @@
 
             {#each backgroundWedges as wedge (wedge.id)}
                 <clipPath id="clip-{wedge.id}">
-                    <path d={wedge.path} style="transition: d 0.8s ease;" />
+                    <path d={wedge.path} />
                 </clipPath>
             {/each}
         </defs>
@@ -361,47 +535,19 @@
             <g class="links">
                 {#each root.links() as link (link.target.data.name)}
                     <CreeperLink pathData={linkGen(link)} ragaData={link.target.data} />
-                    <path d={linkGen(link)} fill="none" stroke="#8b4513" stroke-width="0.5" opacity="0.2" />
+                    <path d={linkGen(link)} fill="none" stroke="#8b4513" stroke-width="0.5" opacity="1" />
                 {/each}
             </g>
 
             {#if backgroundWedges.length > 0}
-                {#if isMusicPlaying}
-                    <g class="smoke-ring" filter="url(#magic-smoke)" style="transform: scale({1 + audioLevel * 0.15}); transition: transform 0.05s;">
-                        <ellipse class="smoke-layer s1" cx="0" cy="0" rx="120" ry="135" />
-                        <ellipse class="smoke-layer s2" cx="0" cy="0" rx="140" ry="125" />
-                        <ellipse class="smoke-layer s3" cx="0" cy="0" rx="130" ry="130" />
-                        <ellipse class="smoke-layer s4" cx="0" cy="0" rx="115" ry="145" />
-                    </g>
-
-                    <g class="interaction-rings" stroke="transparent" stroke-width="20" fill="none" style="cursor: ns-resize;">
-                        <ellipse cx="0" cy="0" rx="120" ry="135"
-                                 on:mousedown={(e) => startRingDrag(e, 'bpm', currentBpm)}>
-                            <title>Drag Up/Down: Tempo (BPM)</title>
-                        </ellipse>
-
-                        <ellipse cx="0" cy="0" rx="140" ry="125"
-                                 on:mousedown={(e) => startRingDrag(e, 'complexity', complexity)}>
-                            <title>Drag Up/Down: Note Density</title>
-                        </ellipse>
-
-                        <ellipse cx="0" cy="0" rx="130" ry="130"
-                                 on:mousedown={(e) => startRingDrag(e, 'swing', swingAmount)}>
-                            <title>Drag Up/Down: Swing (Groove)</title>
-                        </ellipse>
-
-                        <ellipse cx="0" cy="0" rx="115" ry="145"
-                                 on:mousedown={(e) => startRingDrag(e, 'vol', melodyVol)}>
-                            <title>Drag Up/Down: Melody Volume</title>
-                        </ellipse>
-                    </g>
-                {/if}
-                <g class="pizza-root" on:click={() => toggleNode(root)} style="cursor: pointer;">
+                <g class="pizza-root" on:click={() => toggleNode(root)} style="cursor: pointer; pointer-events: auto;">
+                    <circle class="pizza-cta-glow-outer" r={PIZZA_RADIUS + 8} />
+                    <circle class="pizza-cta-glow-inner" r={PIZZA_RADIUS + 4} />
 
                     {#each backgroundWedges as wedge, index (wedge.id)}
                         <g clip-path="url(#clip-{wedge.id})">
 
-                            <path d={wedge.path} fill={wedge.color} style="transition: d 0.8s ease;" />
+                            <path d={wedge.path} fill={wedge.color} />
 
                             <image
                                     href={seasonImages[wedge.season]}
@@ -416,13 +562,12 @@
                             style="
                             transform: rotate({wedge.rotation}deg);
                             transform-origin: 0px 0px;
-                            transition: transform 0.8s ease, width 0.8s ease, x 0.8s ease;
                             "
                             />
 
                         </g>
 
-                        <path d={wedge.path} fill="none" stroke="#d7ccc8" stroke-width="2" style="transition: d 0.8s ease;" />
+                        <path d={wedge.path} fill="none" stroke="#d7ccc8" stroke-width="2" />
 
                     {/each}
 
@@ -436,8 +581,7 @@
                             class="node {node._children ? 'has-children' : ''}"
                             transform="rotate({(node.x * 180) / Math.PI - 90}) translate({node.y},0)"
                             on:click={() => toggleNode(node)}
-                            style="cursor: pointer; transition: transform 0.8s ease;"
-                            in:fade={{ delay: 5000, duration: 500 }}
+                            style="cursor: pointer; pointer-events: auto;"
                     >
                         {#if $activeRaga && $activeRaga.name === node.data.name}
                             <circle class="true-halo" cx="0" cy="0" filter="url(#soft-glow)" />
@@ -474,15 +618,6 @@
             </g>
         {/if}
     </svg>
-    <AudioEngine
-            activeNode={hierarchyNode}
-            bind:isPlaying={isMusicPlaying}
-            bind:currentBpm={currentBpm}
-            bind:complexity={complexity}
-            bind:swingAmount={swingAmount}
-            bind:melodyVol={melodyVol}
-            bind:audioLevel={audioLevel}
-    />
 </div>
 
 <style>
@@ -493,15 +628,78 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: #f4ece1;
+        background-color: transparent;
+        pointer-events: none;
+    }
+
+    /* --- EXPAND BTN UI --- */
+    .expand-btn {
+        position: absolute;
+        top: 20px;
+        right: 90px; /* Next to the Translate Button */
+        z-index: 9999;
+        background-color: var(--theme-parchment, #f4ece1);
+        border: 2px solid var(--theme-terra, #8b4513);
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--theme-ink, #3e2723);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+        pointer-events: auto;
+    }
+    .expand-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    }
+    .expand-btn.active {
+        background-color: var(--theme-sindoor, #d32f2f);
+        color: var(--theme-parchment, #f4ece1);
+        border-color: var(--theme-sindoor, #d32f2f);
+    }
+
+    /* --- CONDITIONAL ANIMATION SYSTEM --- */
+    .animate-tree .pizza-root path {
+        transition: d 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .animate-tree image {
+        transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), width 1.2s cubic-bezier(0.25, 1, 0.5, 1), x 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .animate-tree .links path {
+        transition: d 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .animate-tree .node {
+        transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     .pizza-root {
-        transition: transform 0.8s ease;
     }
 
     .pizza-root path {
-        transition: d 0.8s ease; /* Smoothly morphs the slices as they rotate */
+    }
+
+    .pizza-cta-glow-outer,
+    .pizza-cta-glow-inner {
+        fill: none;
+        pointer-events: none;
+    }
+
+    .pizza-cta-glow-outer {
+        stroke: rgba(255, 168, 41, 0.7);
+        stroke-width: 8px;
+        filter: blur(5px);
+        animation: pizzaGlowPulse 1.8s ease-in-out infinite;
+    }
+
+    .pizza-cta-glow-inner {
+        stroke: rgba(255, 123, 0, 0.78);
+        stroke-width: 4px;
+        filter: blur(1px);
+        animation: pizzaGlowPulseInner 1.8s ease-in-out infinite;
     }
 
     .raga-label {
@@ -545,18 +743,7 @@
         fill: var(--theme-ink);
     }
 
-    /* --- AUDIO PANEL --- */
-    .audio-panel {
-        font-family: var(--font-ui);
-    }
-
-    .raga-name {
-        font-family: var(--font-display);
-        font-size: 1.5rem;
-        color: var(--theme-ink);
-    }
-
-    /* --- THE AURORA BOREALIS BACKGROUND --- */
+    /* --- BACKGROUND LAYER DISABLED: AudioUI_BG sits underneath --- */
     .tree-container {
         width: 100vw;
         height: 100vh;
@@ -564,18 +751,9 @@
         display: flex;
         justify-content: center;
         align-items: center;
-
-        /* The base parchment color */
-        background-color: var(--theme-parchment, #f4ece1);
-
-        /* Two massive, soft radial gradients that use the family's specific colors */
-        background-image:
-                radial-gradient(circle at 0% 0%, var(--active-bg-color) 0%, transparent 60%),
-                radial-gradient(circle at 100% 100%, var(--active-accent-color) 0%, transparent 50%);
-        background-size: 200% 200%;
-
-        /* The slow, breathing shift animation */
-        animation: aurora-flow 12s ease-in-out infinite alternate;
+        background: transparent;
+        animation: none;
+        pointer-events: none;
     }
 
     /* --- NEON GLOW PHYSICS (The Halo Fix) --- */
@@ -630,6 +808,18 @@
         100% { transform: rotate(360deg); }
     }
 
+    @keyframes pizzaGlowPulse {
+        0% { opacity: 0.28; stroke-width: 10px; }
+        50% { opacity: 0.78; stroke-width: 16px; }
+        100% { opacity: 0.28; stroke-width: 10px; }
+    }
+
+    @keyframes pizzaGlowPulseInner {
+        0% { opacity: 0.32; }
+        50% { opacity: 0.9; }
+        100% { opacity: 0.32; }
+    }
+
     /* --- FIXED HALO PHYSICS --- */
     .true-halo {
         fill: var(--active-accent-color);
@@ -640,50 +830,6 @@
     @keyframes true-breathe {
         0% { r: 25px; opacity: 0.6; }
         100% { r: 35px; opacity: 1.0; }
-    }
-
-    /* --- MAGICAL SMOKE RING PHYSICS --- */
-    .smoke-layer {
-        fill: none; /* Hollow rings! */
-        transform-origin: 0 0;
-        mix-blend-mode: multiply;
-        opacity: 0.7;
-    }
-
-    .smoke-layer.s1 {
-        stroke: var(--active-bg-color);
-        stroke-width: 8px;
-        animation: smoke-spin 18s linear infinite, smoke-breathe 6s ease-in-out infinite alternate;
-    }
-
-    .smoke-layer.s2 {
-        stroke: var(--active-accent-color);
-        stroke-width: 4px;
-        /* Spins the opposite way to create the twisting braid effect */
-        animation: smoke-spin 24s linear infinite reverse, smoke-breathe 8s ease-in-out infinite alternate-reverse;
-    }
-
-    .smoke-layer.s3 {
-        stroke: var(--theme-sindoor, #d32f2f);
-        stroke-width: 12px;
-        opacity: 0.4;
-        animation: smoke-spin 30s linear infinite, smoke-breathe 10s ease-in-out infinite alternate;
-    }
-
-    .smoke-layer.s4 {
-        stroke: var(--theme-terra, #8b4513);
-        stroke-width: 2px;
-        animation: smoke-spin 15s linear infinite reverse, smoke-breathe 5s ease-in-out infinite alternate;
-    }
-
-    @keyframes smoke-spin {
-        100% { transform: rotate(360deg); }
-    }
-
-    /* Gently expands and contracts the rings */
-    @keyframes smoke-breathe {
-        0% { transform: rotate(0deg) scale(0.95); }
-        100% { transform: rotate(0deg) scale(1.1); }
     }
 
 </style>

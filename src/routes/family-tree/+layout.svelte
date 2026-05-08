@@ -6,6 +6,7 @@
 	import { currentSeason } from "$lib/stores.js";
 	import Narrator from "$lib/components/Narrator.svelte";
 	import GlobalOverlay from '$lib/components/GlobalOverlay.svelte';
+	import AudioBaithak from '$lib/components/AudioBaithak.svelte';
 
 	let { children } = $props();
 </script>
@@ -28,26 +29,7 @@
     --active-damask-h: var(--damask-h-{$currentSeason.toLowerCase()}, 200px);
 ">
 	<Narrator />
-
-	<div class="ui-frame">
-		<div class="corner top-left cutout">
-			<div class="background damask"></div>
-		</div>
-
-		<div class="corner top-right cutout">
-			<div class="background damask"></div>
-		</div>
-
-		<div class="edge border-top"></div>
-		<div class="edge border-bottom"></div>
-		<div class="edge border-left"></div>
-		<div class="edge border-right"></div>
-
-		<div class="corner corner-image top-left"></div>
-		<div class="corner corner-image top-right"></div>
-		<div class="corner corner-image bottom-left"></div>
-		<div class="corner corner-image bottom-right"></div>
-	</div>
+	<AudioBaithak />
 
 	<div class="page-content">
 		{@render children()}
@@ -130,9 +112,15 @@
 		position: absolute;
 		inset: 1px; /* Creates a margin around the entire screen */
 		pointer-events: none; /* CRITICAL: Lets clicks pass through to the SVG tree */
-		/*z-index: 10;*/
+		z-index: 2;
 		margin: 0;
 		padding: 0;
+	}
+
+	.page-content {
+		position: relative;
+		z-index: 10;
+		pointer-events: none;
 	}
 
 	/* THE CORNERS */

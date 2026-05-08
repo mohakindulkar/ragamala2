@@ -1,8 +1,9 @@
 <script>
     import { base } from "$app/paths";
     import seasonsData from "$lib/data/seasons.json";
-    import { currentLang } from "$lib/stores.js";
+    import { currentLang, currentSeason } from "$lib/stores.js";
     import { harvest } from "$lib/utils/translator.js";
+    import { onDestroy } from "svelte";
 
     let { isLoaded, isPortrait, ragaData = [] } = $props();
 
@@ -33,9 +34,39 @@
         });
     });
 
+    const seasonMainImages = {
+        Vasanta: `${base}/images/vasant_main.jpg`,
+        Grishma: `${base}/images/grishma_main.jpg`,
+        Varsha: `${base}/images/varsha_main.jpg`,
+        Sharad: `${base}/images/sharad_main.jpg`,
+        Hemant: `${base}/images/hemant_main.jpg`,
+        Shishira: `${base}/images/shishir_main.jpg`,
+    };
+    const seasonImageScale = {
+        Vasanta: 0.92,
+        Grishma: 0.9,
+        Varsha: 0.9,
+        Sharad: 0.92,
+        Hemant: 0.9,
+        Shishira: 0.92
+    };
+
     function getImageUrl(seasonName) {
-        const raga = ragaData.find((r) => r.season === seasonName);
-        return (raga && raga.image?.[0]?.url) || `${base}/avatar.png`;
+        return seasonMainImages[seasonName] || `${base}/avatar.png`;
+    }
+
+    function getImageFrame(seasonName) {
+        const scale = seasonImageScale[seasonName] || 1.0;
+        // Increase the bounding box size significantly so the uncropped image scales up to fill the wedge vertically.
+        const size = 170 * scale; 
+        
+        let yOffset = -4;
+        if (seasonName === 'Hemant') {
+            yOffset -= 4; // Additional ~2% upward pull specifically for Hemant
+        }
+        
+        // Subtract from y to pull the paintings slightly upward/outward from the center.
+        return { x: -size / 2, y: -size + yOffset, width: size, height: size };
     }
 
     // --- MATH HELPERS (Restored getSlicePath) ---
@@ -59,11 +90,8 @@
     }
 
     // 3. INTERACTIVE LOGIC
-    function handleIconClick(season) {
-        // This will now log the detailed poetic description from the JSON above
-        console.log(`Season: ${season.name}`);
-        console.log(`Symbolism: ${season.symbol}`);
-        console.log(`Description: ${season.description}`);
+    function handleSeasonClick(season) {
+        $currentSeason = season.name;
     }
 
     function startSpin(e, side) {
@@ -125,21 +153,27 @@
         />
 
         {#each seasonsList as season}
-            <g clip-path="url(#clip-{season.name})">
+            {@const frame = getImageFrame(season.name)}
+            <g 
+                clip-path="url(#clip-{season.name})" 
+                onclick={() => handleSeasonClick(season)}
+                style="cursor: pointer;"
+            >
                 <image
                     href={getImageUrl(season.name)}
-                    x="-100"
-                    y="-100"
-                    width="200"
-                    height="200"
-                    preserveAspectRatio="xMidYMid slice"
+                    x={frame.x}
+                    y={frame.y}
+                    width={frame.width}
+                    height={frame.height}
+                    preserveAspectRatio="xMidYMax meet"
                     transform="rotate({(season.start + season.end) / 2})"
                 />
                 <path
                     class="season-overlay-path"
+                    class:active-season={$currentSeason === season.name}
                     d={getSlicePath(season.start, season.end)}
                     fill={season.color}
-                    opacity="0.6"
+                    opacity={$currentSeason === season.name ? "0.15" : "0.4"}
                 />
             </g>
 
@@ -161,7 +195,7 @@
                 transform="translate({pos.x}, {pos.y})"
                 onclick={(e) => {
                     e.stopPropagation();
-                    handleIconClick(season);
+                    handleSeasonClick(season);
                 }}
                 style="cursor: pointer; pointer-events: auto;"
             >
@@ -236,6 +270,9 @@
         transition: opacity 0.5s ease;
     }
     .season-overlay-path:hover {
-        opacity: 0.3;
+        opacity: 0.2;
+    }
+    .season-overlay-path.active-season {
+        opacity: 0.15 !important;
     }
 </style>

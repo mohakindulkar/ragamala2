@@ -109,7 +109,7 @@
         y="-80" 
         width="36" 
         height="42" 
-        style="filter: brightness(0) invert(1);"
+        style="filter: brightness(0) invert(1); opacity: 0.7;"
     />
 </g>
 

@@ -98,57 +98,66 @@
             on:miniAction={readMainAloud}
     >
         <div class="narrator-content">
+            <div class="top-section">
+                {#if $activeRaga.image}
+                    <div class="gallery-container">
+                        {#each Array.isArray($activeRaga.image) ? $activeRaga.image : [{ url: $activeRaga.image, txt: '' }] as img}
+                            {@const cleanUrl = img.url.startsWith('/') ? img.url : `/${img.url}`}
+                            <button class="thumbnail-btn" on:click={() => openOverlay(img)} aria-label="View painting full size">
+                                <img src={`${base}${cleanUrl}`} alt={displayName} class="thumbnail-img" />
+                            </button>
+                        {/each}
+                    </div>
+                {/if}
 
-            {#if $activeRaga.image}
-                <div class="gallery-container">
-                    {#each Array.isArray($activeRaga.image) ? $activeRaga.image : [{ url: $activeRaga.image, txt: '' }] as img}
-                        {@const cleanUrl = img.url.startsWith('/') ? img.url : `/${img.url}`}
-                        <button class="thumbnail-btn" on:click={() => openOverlay(img)} aria-label="View painting full size">
-                            <img src={`${base}${cleanUrl}`} alt={displayName} class="thumbnail-img" />
-                        </button>
-                    {/each}
+                <div class="header-column">
+                    <button class="voice-btn" on:click={readMainAloud} class:active={isSpeaking} aria-label="Read description aloud">
+                        <span class="state-listen"><span class="icon">🗣️</span> Listen</span>
+                        <span class="state-stop"><span class="icon">🛑</span> Stop</span>
+                    </button>
+
+                    {#if $activeRaga.time}
+                        <div class="metadata">
+                            <span class="meta-label">Time:</span> { $activeRaga.time }
+                        </div>
+                    {/if}
+
+                    <h3 class="raga-title">{displayName}</h3>
                 </div>
-            {/if}
-
-            <div class="header-row">
-                <h3 class="raga-title">{displayName}</h3>
-
-                <button class="voice-btn" on:click={readMainAloud} class:active={isSpeaking} aria-label="Read description aloud">
-                    <span class="state-listen"><span class="icon">🗣️</span> Listen</span>
-                    <span class="state-stop"><span class="icon">🛑</span> Stop</span>
-                </button>
             </div>
 
             <p class="poetry-text">{textToRead}</p>
-
-            {#if $activeRaga.time}
-                <div class="metadata">
-                    <span class="meta-label">Time:</span> { $activeRaga.time }
-                </div>
-            {/if}
         </div>
     </Cartouche>
 {/if}
 
 <style>
     .narrator-content {
-        width: 360px;
-        padding: 20px;
+        width: 310px; /* Slightly increased width to accommodate horizontal layout */
+        padding: 15px;
     }
 
-    .header-row {
+    .top-section {
         display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 12px;
-        border-bottom: 1px solid rgba(139, 69, 19, 0.2);
-        padding-bottom: 10px;
+        gap: 15px;
+        margin-bottom: 15px;
+        align-items: stretch;
+    }
+
+    .header-column {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 12px;
+        flex: 1;
+        border-left: 1px solid rgba(139, 69, 19, 0.2);
+        padding-left: 12px;
     }
 
     .raga-title {
         font-family: var(--font-display, serif);
         color: var(--accent-color, #d32f2f);
-        margin: 0;
+        margin: auto 0 0 0; /* Pushes to bottom */
         font-size: 1.6rem;
         line-height: 1.1;
     }
@@ -226,8 +235,9 @@
         flex-direction: row;
         gap: 10px;
         overflow-x: auto;
-        padding: 10px; /* Extra padding so the scaled image doesn't get clipped */
-        margin: -10px -10px 15px -10px; /* Negative margin to keep the visual alignment identical */
+        padding: 10px; 
+        margin: -10px 0 0 -10px;
+        flex-shrink: 0;
     }
 
     .gallery-container::-webkit-scrollbar { height: 4px; }
@@ -237,17 +247,20 @@
     }
 
     .thumbnail-btn {
-        flex: 0 0 120px; /* Much bigger size for thumbnails */
-        height: 160px; /* Portrait orientation */
+        flex: 0 0 150px; /* Increased size as requested */
+        height: 200px; /* Increased size as requested */
         padding: 3px;
         background-color: var(--theme-parchment, #f4ece1);
         border: 2px solid var(--theme-sindoor, #d32f2f);
         cursor: pointer;
-        transition: transform 0.2s;
+        transition: transform 0.2s, box-shadow 0.2s;
+        animation: thumbnailBreathe 3s ease-in-out infinite alternate;
     }
 
     .thumbnail-btn:hover {
-        transform: scale(1.05);
+        animation-play-state: paused; /* Pause at current state or we can force it */
+        transform: scale(1.08); /* Slightly bigger on hover */
+        box-shadow: 0 0 25px var(--theme-sindoor, #d32f2f);
     }
 
     .thumbnail-img {
@@ -356,5 +369,16 @@
     }
     .voice-btn.active .state-listen {
         display: none;
+    }
+
+    @keyframes thumbnailBreathe {
+        0% {
+            transform: scale(0.96);
+            box-shadow: 0 0 5px var(--theme-sindoor, #d32f2f);
+        }
+        100% {
+            transform: scale(1.04);
+            box-shadow: 0 0 18px 3px var(--theme-sindoor, #d32f2f);
+        }
     }
 </style>

@@ -26,3 +26,16 @@ export const overlayData = writable(null);
 // We can derive the background colors from the activeSeason and activeTime
 export const bgColorPrimary = writable('#3e2723'); // Default fallback
 export const bgColorAccent = writable('#ffaa00');  // Default fallback
+// Controls only the AudioUI background brightness state
+export const audioBgDimmed = writable(false);
+// Controls whether the family tree is in full expansion dynamic mode
+export const isFullTreeMode = writable(false);
+
+// Controls the active state of instruments in the Audio Baithak
+export const baithakInstruments = writable({
+    tanpura: false,
+    sitar: false,
+    pakhawaj: false,
+    tabla: false,
+    flute: false
+});
