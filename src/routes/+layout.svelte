@@ -109,10 +109,12 @@
 </svelte:head>
 
 <div class="app-wrapper {currentRouteClass}">
-    <Navigation />
-    <div class="widget-layer">
-        <div class="translate-container"><GoogleTranslate /></div>
-    </div>
+	<Navigation />
+	<div class="widget-layer">
+        <div class="top-widgets">
+		    <GoogleTranslate />
+        </div>
+	</div>
 
     <main class="page-content">
         {@render children()}
@@ -157,18 +159,18 @@
         z-index: 50;
     }
 
-    .translate-container {
-        pointer-events: auto; /* Reactivate clicks just for the buttons */
+    .top-widgets {
         position: absolute;
-    }
-
-    /* Position your widgets as you like */
-    .translate-container {
         top: 20px;
-        right: 20px;
+        right: 30px;
+        z-index: 10000;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        pointer-events: auto;
     }
 
-    /* --- THE MAGIC ROUTE RESTYLING --- */
+	/* --- THE MAGIC ROUTE RESTYLING --- */
     /* Hides the cutouts ONLY when we are on the Calendar (home) page */
     :global(.route-home .cutout),
     :global(.route-ragamala- .cutout),

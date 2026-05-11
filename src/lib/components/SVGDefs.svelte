@@ -48,38 +48,38 @@
             }
 
             #lotus .stem {
-                animation: kaboom 5s ease forwards;
+                animation: kaboom 2s ease forwards;
                 animation-delay: 0s;
             }
 
             #lotus .petals g,
             #lotus .petals .bud {
                 opacity: 0.0;
-                animation: hideshow 6s ease forwards;
+                animation: hideshow 2s ease forwards;
                 transition: all 1s ease;
             }
 
             #lotus .petals .bud {
-                animation-delay: 1s;
+                animation-delay: 0.15s;
             }
 
             #lotus .petals .petals-2 {
-                animation-delay: 2s;
+                animation-delay: 0.35s;
                 display: var(--show-p2, block);
             }
 
             #lotus .petals .petals-3 {
-                animation-delay: 3s;
+                animation-delay: 0.75s;
                 display: var(--show-p3, block);
             }
 
             #lotus .petals .petals-4 {
-                animation-delay: 4s;
+                animation-delay: 1.15s;
                 display: var(--show-p4, block);
             }
 
             #lotus .petals .petals-5 {
-                animation-delay: 5s;
+                animation-delay: 1.5s;
                 display: var(--show-p5, block);
             }
 
@@ -87,7 +87,7 @@
             .Vasanta .vine {
                 fill: var(--vasanta-vine);
             }
-            .Vasanta #lotus .petals path {
+            .Vasanta #lotus .petals path, .Vasanta #flower .petals path {
                 fill: var(--vasanta-bloom);
             }
 
@@ -95,66 +95,50 @@
             .Grishma .vine {
                 fill: var(--grishma-vine);
             }
-            .Grishma #lotus .petals path {
+            .Grishma #lotus .petals path, .Grishma #flower .petals path {
                 fill: var(--grishma-bloom);
             }
-            .Grishma .petals-5 {
-                animation: none;
-                display: none;
-            }
+ 
 
             /* Varsha (Monsoon) - Lush & Deep */
             .Varsha .vine {
                 fill: var(--varsha-vine);
             }
-            .Varsha #lotus .petals path {
+            .Varsha #lotus .petals path, .Varsha #flower .petals path {
                 fill: var(--varsha-bloom);
             }
-            .Varsha .petals-5,
-            .Varsha .petals-4 {
-                animation: none;
-                display: none;
-            }
+ 
 
             /* Sharad (Autumn) - Clear & Cool */
             .Sharad .vine:not(.symbol-lotus) {
                 fill: var(--sharad-vine);
             }
-            .Sharad #lotus .petals path {
+            .Sharad #lotus .petals path, .Sharad #flower .petals path {
                 fill: var(--sharad-bloom);
             }
-            .Sharad .petals-5,
-            .Sharad .petals-4,
-            .Sharad .petals-3 {
-                animation: none;
-                display: none;
-            }
+ 
 
             /* Hemant (Pre-Winter) - Muted & Harvested */
             .Hemant .vine {
                 fill: var(--hemant-vine);
             }
 
-            .Hemant #lotus.petals path {
+            .Hemant #lotus.petals path, .Hemant #flower .petals path {
                 fill: var(--hemant-bloom);
             }
-            .Hemant .symbol-lotus {
-                x: -2%;
-            }
+ 
 
             /* Shishira (Winter) - Desaturated & Ascetic */
             .Shishira .vine {
                 fill: var(--shishira-vine);
             }
-            .Shishira #lotus path {
+            .Shishira #lotus path, .Shishira #flower path {
                 fill: var(--shishira-bloom);
             }
-            .Shishira .symbol-lotus {
-                x: -7%;
-            }
+ 
 
             .Shishira #lotus .petals .bud {
-                animation-delay: 5s;
+                animation-delay: 1.6s;
             }
 
             .vine:not(.symbol-lotus):not(.symbol-bud):not(.symbol-flower) {
@@ -191,6 +175,22 @@
             use.vine.creeper-item.symbol-bud,
             path.bud {
                 fill: var(--current-bloom) !important;
+            }
+
+            .raga-accent .vine-line {
+                stroke: var(--raga-vine, var(--current-vine)) !important;
+            }
+
+            .raga-accent .vine {
+                fill: var(--raga-vine, var(--current-vine)) !important;
+            }
+
+            .raga-accent #lotus .petals path,
+            .raga-accent #lotus .stem,
+            .raga-accent #flower .bud,
+            .raga-accent #flower .vine,
+            .raga-accent path.bud {
+                fill: var(--raga-bloom, var(--current-bloom)) !important;
             }
 
             .stop1 { stop-color: #EFBF04; }

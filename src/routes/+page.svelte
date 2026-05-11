@@ -32,7 +32,7 @@
     <svg xmlns="http://www.w3.org/2000/svg"
          xmlns:xlink="http://www.w3.org/1999/xlink"
          viewBox={dynamicViewBox} class="ragamala-system-svg"
-         style="font-family: var(--font-ui, sans-serif);">
+         style="font-family: var(--font-bharvati, Bharvati, serif);">
         <Seasons {isLoaded} {isPortrait} ragaData={[dipakData]} />
         <g transform="scale(0.85)">
             <Clock onHoleClick={handleEnterTree}>
@@ -57,4 +57,21 @@
     }
 
     .zoom-dive { transform: scale(5); opacity: 0; }
+
+    @media (max-width: 600px) {
+        .calendar-stage {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 100vh;
+            height: 100vw;
+            transform: translate(-50%, -50%) rotate(90deg);
+            transform-origin: center center;
+        }
+
+        .ragamala-system-svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
 </style>

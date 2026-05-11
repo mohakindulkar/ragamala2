@@ -246,4 +246,20 @@
 		color: var(--theme-ink);
 	}
 
+	@media (max-width: 600px) {
+		.app-wrapper {
+			position: fixed;
+			left: 50%;
+			top: 50%;
+			width: 100vh;
+			height: 100vw;
+			transform: translate(-50%, -50%) rotate(90deg);
+			transform-origin: center center;
+		}
+
+		:global(body) {
+			overflow: hidden;
+		}
+	}
+
 </style>

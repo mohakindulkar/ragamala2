@@ -104,14 +104,12 @@
 
 <style>
     .translate-container {
-        position: absolute;
-        top: 20px;
-        right: 30px;
-        z-index: 9999;
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: flex-end;
         gap: 10px;
+        pointer-events: auto;
     }
 
     /* THE ICON BUTTON */

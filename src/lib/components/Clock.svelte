@@ -95,7 +95,6 @@
                 <span class="verse-title">{translated.name || activeTime.name}</span>
                 <span class="verse-text">{translated.verse || activeTime.verse}</span>
                 <div class="divider"></div>
-                <span class="enter-btn">Play ({activeTime.startHour}-{activeTime.endHour})</span>
             </div>
         </foreignObject>
     </g>
@@ -148,7 +147,7 @@
     /* Font sizes are now mapped 1:1 with SVG user-units, making them perfectly scalable */
     .verse-title {
         font-family: var(--font-display, serif);
-        font-size: 11px; font-weight: bold; color: var(--active-accent-color); margin-bottom: 2px;
+        font-size: 11px; font-weight: normal; color: var(--active-accent-color); margin-bottom: 2px;
     }
 
     .verse-text {

@@ -21,7 +21,7 @@
 <section
     class="audio-baithak"
     aria-label="Baithak scene"
-    style={`--audio-reactive-opacity: ${$audioBgDimmed ? 0.3 : 0}; --audio-bg-blur: ${$audioBgDimmed ? 5 : 0}px; --bg-image: url('${base}/images/AudioUI_BG.png');`}
+    style={`--audio-reactive-opacity: ${$audioBgDimmed ? 0.3 : 0}; --audio-bg-blur: ${$audioBgDimmed ? 7.986 : 0}px; --bg-image: url('${base}/images/AudioUI_BG.png');`}
 >
     <img class="instrument tanpura" class:active={$baithakInstruments.tanpura} src="{base}/images/AudioUI_Tanpura.png" alt="Tanpura" role="button" tabindex="0" onclick={() => toggleInstrument('tanpura')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('tanpura')}>
     <img class="instrument sitar" class:active={$baithakInstruments.sitar} src="{base}/images/AudioUI_Sitar.png" alt="Sitar" role="button" tabindex="0" onclick={() => toggleInstrument('sitar')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('sitar')}>
@@ -131,50 +131,4 @@
         transform: scaleX(-1);
     }
 
-    @media (max-width: 600px) {
-        .audio-baithak {
-            display: block;
-            overflow: visible;
-            pointer-events: none;
-        }
-
-        .instrument {
-            position: absolute;
-            max-height: 16vh !important; /* Uniform visual scaling */
-            max-width: 25vw !important;  /* Keeps wide instruments like flute in check */
-            height: auto !important;
-            width: auto !important;
-            pointer-events: auto;
-            object-fit: contain;
-        }
-
-        .tanpura {
-            left: 5% !important;
-            bottom: 8% !important;
-            rotate: -15deg !important;
-        }
-
-        .sitar {
-            right: 5% !important;
-            bottom: 8% !important;
-            rotate: 10deg !important;
-        }
-
-        .pakhawaj {
-            left: 25% !important;
-            bottom: 7% !important;
-        }
-
-        .tabla {
-            left: 52% !important;
-            bottom: 8% !important;
-        }
-
-        .flute {
-            left: 53% !important;
-            bottom: 6.5% !important;
-            rotate: 3deg !important;
-            transform: scaleX(-1) !important;
-        }
-    }
 </style>

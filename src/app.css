@@ -1,13 +1,21 @@
+@font-face {
+    font-family: 'Bharvati';
+    src: url('/fonts/Bharvati.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 :root {
     /* TYPOGRAPHY SYSTEM */
     /* Tiro brings that heavy, calligraphic manuscript texture to headers */
-    --font-display: 'Tiro Devanagari Sanskrit', serif;
+    --font-display: 'Bharvati', serif;
+    --font-bharvati: 'Bharvati', serif;
 
-    /* Noto Serif is incredibly legible for long-form reading in any language */
-    --font-body: 'Noto Serif', serif;
+    /* Bharvati is now the primary body font */
+    --font-body: 'Bharvati', serif;
 
-    /* Noto Sans keeps complex UI panels and data labels clean and sharp */
-    --font-ui: 'Noto Sans', sans-serif;
+    /* UI elements also use Bharvati */
+    --font-ui: 'Bharvati', serif;
 
     /* UNIFIED RAGAMALA THEME */
     --theme-parchment: #f4ece1; /* Base canvas */
@@ -171,6 +179,13 @@ html {
     color: var(--theme-ink);
     user-select: none;
     -webkit-user-select: none;
+}
+
+:global(html[lang]:not([lang="en"])) body,
+:global(html[lang]:not([lang="en"])) body *,
+:global(.goog-te-menu-frame),
+:global(.goog-te-menu-frame *) {
+    font-family: var(--font-bharvati), serif !important;
 }
 :global(.route-home .cutout) { display: none !important; }
 .calendar-stage {

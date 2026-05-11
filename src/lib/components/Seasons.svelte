@@ -125,7 +125,7 @@
     {#each seasonsData as season}
         <path
             id="text-arc-{season.name}"
-            d={getArcPath(season.start, season.end, 92)}
+            d={getArcPath(season.start, season.end, 90.1)}
         />
         <clipPath id="clip-{season.name}"
             ><path d={getSlicePath(season.start, season.end)} /></clipPath
@@ -177,7 +177,7 @@
                 />
             </g>
 
-            <text font-size="7" font-weight="bold" letter-spacing="1">
+            <text font-size="6.3" font-weight="500" letter-spacing="1">
                 <textPath
                     href="#text-arc-{season.name}"
                     startOffset="50%"
@@ -208,11 +208,11 @@
                     stroke-width="0"
                 />
                 <text
-                    class="icon-in-circle"
+                    class="icon-in-circle season-{season.name.toLowerCase()}"
                     dy=".3em"
                     text-anchor="middle"
                     font-size="6"
-                    fill="var(--theme-ink)"
+                    fill={season.name === 'Hemant' ? '#4e342e' : 'var(--theme-ink)'}
                 >
                     {season.icon}
                 </text>

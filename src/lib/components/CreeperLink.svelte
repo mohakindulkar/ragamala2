@@ -2,6 +2,10 @@
     import { tick } from 'svelte'; // Import tick to wait for DOM updates
     export let pathData;
     export let ragaData;
+    export let terminalOffset = { x: -5, y: -20 };
+    export let terminalSymbol = 'lotus';
+    export let showTerminal = true;
+    export let accentColor = null;
 
     let pathEl;
     let ornaments = [];
@@ -12,8 +16,8 @@
         'Grishma': ['bud', 'wiggle', 'swiggle', 'leaf'],
         'Varsha': ['leaf', 'double-leafs', 'lotus', 'swiggle', 'branch-l'],
         'Sharad': ['leaf', 'mango-blossom', 'bud', 'branch-r'],
-        'Hemant': ['leaf', 'wiggle', 'branch-l'],
-        'Shishira': ['wiggle', 'swiggle']
+        'Hemant': ['leaf', 'double-leafs', 'bud', 'wiggle', 'branch-l'],
+        'Shishira': ['leaf', 'double-leafs', 'bud', 'wiggle', 'swiggle']
     };
 
     function shuffleArray(array) {
@@ -57,14 +61,20 @@
                 x: point.x,
                 y: point.y,
                 angle: angle,
-                type: isLast ? 'lotus' : branchPool[i % branchPool.length],
-                flip: Math.random() > 0.5 // randomly set true or false
+                type: isLast
+                    ? (showTerminal ? terminalSymbol : null)
+                    : branchPool[i % branchPool.length],
+                flip: Math.random() > 0.5 
             };
         });
     }
 </script>
 
-<g class="creeper-branch {ragaData.season}">
+<g
+    class="creeper-branch {ragaData.season}"
+    class:raga-accent={!!accentColor}
+    style={accentColor ? `--raga-vine: ${accentColor}; --raga-bloom: ${accentColor};` : ""}
+>
     <path bind:this={pathEl} d={pathData} fill="none" stroke="transparent" />
 
     {#key pathData}
@@ -72,17 +82,20 @@
 
         {#each ornaments as orni, i (orni.id)}
             <g transform="translate({orni.x}, {orni.y}) rotate({orni.angle + 90})">
-                <use
-                        href="#{orni.type}"
-                        class="vine creeper-item symbol-{orni.type}"
-                        x="0" y="0"
-                        style="
-                        --scale-factor: {orni.type === 'lotus' ? 0.5 : 0.3};
-                        --flip-factor: {(orni.type === 'lotus') ? 1 : (orni.flip ? -1 : 1) };
-                        /* Sync with the 0.5s line draw */
-                        animation-delay: {(i / ornaments.length) * 0.5}s;
-                    "
-                />
+                {#if orni.type}
+                    <use
+                            href="#{orni.type}"
+                            class="vine creeper-item symbol-{orni.type}"
+                            x={i === ornaments.length - 1 ? terminalOffset.x : -5} 
+                            y={i === ornaments.length - 1 ? terminalOffset.y : -10}
+                            style="
+                            --scale-factor: {i === ornaments.length - 1 ? 0.5 : 0.3};
+                            --flip-factor: {orni.flip ? -1 : 1};
+                            /* Sync with the 0.5s line draw */
+                            animation-delay: {(i / ornaments.length) * 0.5}s;
+                        "
+                    />
+                {/if}
             </g>
         {/each}
     {/key}
@@ -122,6 +135,14 @@
         stroke-width: 3px;
         stroke-opacity: 0.5;
         fill: none;
+    }
+
+    .creeper-branch.raga-accent .vine-line {
+        stroke: var(--raga-vine, var(--current-vine));
+    }
+
+    .creeper-branch.raga-accent .creeper-item {
+        fill: var(--raga-vine, var(--current-vine));
     }
     .creeper-branch g:nth-child(2n) .creeper-item:not(.symbol-lotus) {
         /* scaleX mirrors the element horizontally when --flip-factor is -1 */
@@ -203,30 +224,6 @@
          --show-p2: block;
      }
 
-    /* Monsoon: Hide step 5 */
-    .creeper-branch.Varsha {
-        --show-p5: none;
-    }
 
-    /* Autumn: Hide steps 4 and 5 */
-    .creeper-branch.Sharad {
-        --show-p5: none;
-        --show-p4: none;
-    }
-
-    /* Pre-Winter: Hide steps 3, 4, and 5 */
-    .creeper-branch.Hemant {
-        --show-p5: none;
-        --show-p4: none;
-        --show-p3: none;
-    }
-
-    /* Winter: Hide everything except the bud (step 1) */
-    .creeper-branch.Shishira {
-        --show-p5: none;
-        --show-p4: none;
-        --show-p3: none;
-        --show-p2: none;
-    }
 
 </style>
