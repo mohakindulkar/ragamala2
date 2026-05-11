@@ -103,7 +103,7 @@
     .sitar {
         height: 64.9%;
         right: 15.5%;
-        bottom: 18.8%;
+        bottom: 20.8%;
         z-index: 3;
         rotate: 10deg;
     }
@@ -156,7 +156,7 @@
 
         .sitar {
             right: 5% !important;
-            bottom: 8% !important;
+            bottom: 10% !important;
             rotate: 10deg !important;
         }
 

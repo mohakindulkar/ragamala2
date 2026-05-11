@@ -70,7 +70,7 @@
     .sitar {
         height: 64.9%;
         right: 15.5%;
-        bottom: 18.8%;
+        bottom: 20.8%;
         transform: none;
         z-index: 3;
     }

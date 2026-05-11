@@ -14,8 +14,22 @@
     }
   ],
   "musicalDNA": {
-    "arohana": ["C4", "Eb4", "F4", "Ab4", "Bb4", "C5"],
-    "avarohana": ["C5", "Bb4", "Ab4", "F4", "Eb4", "C4"],
+    "arohana": [
+      "C4",
+      "Eb4",
+      "F4",
+      "Ab4",
+      "Bb4",
+      "C5"
+    ],
+    "avarohana": [
+      "C5",
+      "Bb4",
+      "Ab4",
+      "F4",
+      "Eb4",
+      "C4"
+    ],
     "vadi": "F4",
     "samvadi": "C4",
     "tempo": "slow",
@@ -28,7 +42,10 @@
       "description": "A weeping woman painting a portrait of her absent lover to ease her sorrow.",
       "musicalMutation": {
         "description": "Flattens the 3rd and 6th notes heavily to evoke Karuna (compassion and longing).",
-        "flattenNotes": ["Eb4", "Ab4"],
+        "flattenNotes": [
+          "Eb4",
+          "Ab4"
+        ],
         "vadi": "Eb4",
         "tempo": "slow"
       },

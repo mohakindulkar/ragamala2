@@ -4,7 +4,7 @@
   "type": "Parent Raga",
   "description": "Intense passion; associated with flames and glowing lamps.",
   "color": "Fiery Red",
-  "time": "Summer Night",
+  "time": "Evening",
   "image": [
     {
       "url": "images/dipak-main.jpg",
@@ -14,8 +14,26 @@
     }
   ],
   "musicalDNA": {
-    "arohana": ["C4", "Db4", "E4", "F#4", "G4", "Ab4", "B4", "C5"],
-    "avarohana": ["C5", "B4", "Ab4", "G4", "F#4", "E4", "Db4", "C4"],
+    "arohana": [
+      "C4",
+      "Db4",
+      "E4",
+      "F#4",
+      "G4",
+      "Ab4",
+      "B4",
+      "C5"
+    ],
+    "avarohana": [
+      "C5",
+      "B4",
+      "Ab4",
+      "G4",
+      "F#4",
+      "E4",
+      "Db4",
+      "C4"
+    ],
     "vadi": "C4",
     "samvadi": "G4",
     "tempo": "medium",
@@ -28,7 +46,10 @@
       "description": "A radiant woman playing the veena in a grove, charming the wild deer.",
       "musicalMutation": {
         "description": "Flattens the 2nd and 3rd notes for a feeling of tender longing.",
-        "flattenNotes": ["Db4", "Eb4"],
+        "flattenNotes": [
+          "Db4",
+          "Eb4"
+        ],
         "vadi": "Eb4"
       },
       "image": [

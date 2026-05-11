@@ -57,21 +57,4 @@
     }
 
     .zoom-dive { transform: scale(5); opacity: 0; }
-
-    @media (max-width: 600px) {
-        .calendar-stage {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 100vh;
-            height: 100vw;
-            transform: translate(-50%, -50%) rotate(90deg);
-            transform-origin: center center;
-        }
-
-        .ragamala-system-svg {
-            width: 100%;
-            height: 100%;
-        }
-    }
 </style>

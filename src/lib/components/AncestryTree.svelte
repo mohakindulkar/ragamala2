@@ -13,6 +13,7 @@
         activeRaga,
         currentLang,
         audioBgDimmed,
+        audioLeadMode,
         baithakInstruments,
     } from "$lib/stores.js";
     // Track the active node when a user clicks
@@ -41,7 +42,9 @@
     const PIZZA_RADIUS = 110;
     // D3 Zoom Variables
     let svgElement; // Binds to the <svg> tag to capture mouse drags
+    let zoomBehavior = null;
     let zoomTransform = { x: 0, y: 0, k: 1 }; // Holds the current pan/zoom state [cite: 16]
+    let hasSettledViewport = false;
 
     // --- SMOOTH STAGE ROTATION SYSTEM ---
     const globalRotation = tweened(0, {
@@ -68,11 +71,31 @@
         }
     }
 
+    function getAudioSuffix(name) {
+        if ($audioLeadMode !== "flute") return "";
+        return name === "bhairav" ? currentBhairavVariant : "flute";
+    }
+
     function buildHierarchy() {
         hierarchyNode = d3.hierarchy(data).each((d) => {
             // 1. Inherit Season (Already working perfectly!)
             if (!d.data.season && d.parent) {
                 d.data.season = d.parent.data.season;
+            }
+
+            if (!d.data.time && d.parent) {
+                d.data.time = d.parent.data.time;
+            }
+
+            if (d.depth === 1) {
+                d.data.lineageInfo = {
+                    time: d.data.time || "",
+                    season: d.data.season || "",
+                    vadi: d.data.musicalDNA?.vadi || "",
+                    samvadi: d.data.musicalDNA?.samvadi || "",
+                };
+            } else if (d.parent?.data?.lineageInfo) {
+                d.data.lineageInfo = { ...d.parent.data.lineageInfo };
             }
 
             // 2. MUSICAL INHERITANCE
@@ -144,7 +167,7 @@
         buildHierarchy();
 
         // Initialize D3 Zoom and Pan
-        const zoomBehavior = d3
+        zoomBehavior = d3
             .zoom()
             .scaleExtent([0.3, 3]) // Allow zooming out to 30% and in to 300%
             .on("zoom", (event) => {
@@ -152,7 +175,7 @@
             });
 
         // Attach the zoom behavior to the SVG element
-        d3.select(svgElement).call(zoomBehavior);
+        d3.select(svgElement).call(zoomBehavior).on("dblclick.zoom", null);
 
         // Apply initial transform: 10% up and 10% increased in size
         const initialTransform = d3.zoomIdentity
@@ -160,6 +183,20 @@
             .scale(1.1);
         d3.select(svgElement).call(zoomBehavior.transform, initialTransform);
     });
+
+    function settleViewportToTop() {
+        if (!zoomBehavior || !svgElement || hasSettledViewport) return;
+
+        hasSettledViewport = true;
+        const targetTransform = d3.zoomIdentity
+            .translate(0, -containerHeight * 0.5)
+            .scale(1.1);
+        d3.select(svgElement)
+            .transition()
+            .duration(700)
+            .ease(cubicOut)
+            .call(zoomBehavior.transform, targetTransform);
+    }
 
     onDestroy(() => {
         audioBgDimmed.set(false);
@@ -296,15 +333,10 @@
                 if (!$baithakInstruments.sitar && !$baithakInstruments.flute) {
                     stopRagaAudio(false);
                 } else {
-                    let suffix = $baithakInstruments.flute ? "flute" : "";
+                    let suffix = getAudioSuffix(name);
 
                     // --- BHAIRAV SPECIAL LOGIC ---
                     if (name === "bhairav") {
-                        // 1. Handle random variant suffix
-                        if (suffix === "flute") {
-                            suffix = currentBhairavVariant;
-                        }
-
                         // 2. Handle Percussion Swap for Flute 2
                         const needsPakhawaj = suffix === "flute2";
                         if (needsPakhawaj && !$baithakInstruments.pakhawaj) {
@@ -351,8 +383,8 @@
         updateTree();
     }
 
-    // Roll for new Bhairav variant when flute is toggled manually
-    $: if ($baithakInstruments.flute && $activeRaga?.name === "Bhairav") {
+    // Roll for new Bhairav variant when flute mode is active
+    $: if ($audioLeadMode === "flute" && $activeRaga?.name === "Bhairav") {
         currentBhairavVariant = Math.random() > 0.5 ? "flute2" : "flute";
     }
 
@@ -463,19 +495,27 @@
             if (mainRagas.includes(ragaName)) {
                 if (isExpanding) {
                     const isSri = ragaName === "sri";
+                    const leadIsFlute = $audioLeadMode === "flute";
 
-                    // --- FORCE RESET TO SITAR MODE ---
-                    // Whenever a raga is expanded, we ALWAYS want Sitar + Tabla/Pakhawaj first.
+                    if (ragaName === "bhairav" && leadIsFlute) {
+                        currentBhairavVariant =
+                            Math.random() > 0.5 ? "flute2" : "flute";
+                    }
+
+                    // --- FORCE RESET TO THE CURRENT LEAD MODE ---
+                    // Keep the button-selected lead instrument when a new raga opens.
                     baithakInstruments.set({
                         tanpura: true,
-                        sitar: true,
+                        sitar: !leadIsFlute,
                         pakhawaj: isSri,
                         tabla: !isSri,
-                        flute: false,
+                        flute: leadIsFlute,
                     });
 
-                    // Trigger Sitar version immediately
-                    playRagaAudio(`${base}/audio/${ragaName}-audio.wav`);
+                    // Trigger the selected lead instrument immediately
+                    playRagaAudio(
+                        `${base}/audio/${ragaName}${getAudioSuffix(ragaName)}-audio.wav`,
+                    );
                 } else {
                     baithakInstruments.set({
                         tanpura: false,
@@ -490,8 +530,9 @@
 
         // --- 4. Choreographed Animation Flow ---
         if (d.depth === 1 && isExpanding) {
-            // RAGA LEVEL: Rotate first, blossom later
-            rotateTo(d.x)
+            // RAGA LEVEL: Rotate to the bottom, then blossom below
+            settleViewportToTop();
+            rotateTo(d.x + Math.PI)
                 .then(() => {
                     // Safety check: ensure this is still the active raga
                     if ($activeRaga && $activeRaga.name === d.data.name) {
@@ -828,18 +869,17 @@
                             <g clip-path="url(#clip-{wedge.id})">
                                 <path d={wedge.path} fill={wedge.color} />
 
-                                <image
-                                    href={seasonImages[wedge.season]}
-                                    x={-wedge.imageWidth / 2}
-                                    y={-PIZZA_RADIUS}
-                                    width={wedge.imageWidth}
-                                    height={PIZZA_RADIUS}
-                                    preserveAspectRatio="xMidYMax slice"
-                                    style="
-                            transform: rotate({wedge.rotation}deg);
-                            transform-origin: 0px 0px;
-                            "
-                                />
+                                <g transform="rotate({wedge.rotation})">
+                                    <image
+                                        href={seasonImages[wedge.season]}
+                                        x={-wedge.imageWidth / 2}
+                                        y={-PIZZA_RADIUS}
+                                        width={wedge.imageWidth}
+                                        height={PIZZA_RADIUS}
+                                        preserveAspectRatio="xMidYMax slice"
+                                        transform={`translate(0 ${-PIZZA_RADIUS / 2}) scale(1,-1) translate(0 ${PIZZA_RADIUS / 2})`}
+                                    />
+                                </g>
                             </g>
 
                             <path

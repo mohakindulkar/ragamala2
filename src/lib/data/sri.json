@@ -4,7 +4,7 @@
   "type": "Parent Raga",
   "description": "Grand and heroic; an aristocratic king seated on a terrace.",
   "color": "Lavish Gold",
-  "time": "Autumn / Early Evening",
+  "time": "Evening",
   "image": [
     {
       "url": "images/sri-main.jpg",
@@ -14,8 +14,26 @@
     }
   ],
   "musicalDNA": {
-    "arohana": ["C4", "Db4", "E4", "F#4", "G4", "Ab4", "B4", "C5"],
-    "avarohana": ["C5", "B4", "Ab4", "G4", "F#4", "E4", "Db4", "C4"],
+    "arohana": [
+      "C4",
+      "Db4",
+      "E4",
+      "F#4",
+      "G4",
+      "Ab4",
+      "B4",
+      "C5"
+    ],
+    "avarohana": [
+      "C5",
+      "B4",
+      "Ab4",
+      "G4",
+      "F#4",
+      "E4",
+      "Db4",
+      "C4"
+    ],
     "vadi": "Db4",
     "samvadi": "G4",
     "tempo": "slow-medium",

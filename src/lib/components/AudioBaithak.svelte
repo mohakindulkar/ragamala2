@@ -1,7 +1,14 @@
 <script>
     import { base } from '$app/paths';
-    import { audioBgDimmed, baithakInstruments } from '$lib/stores.js';
+    import { audioBgDimmed, audioLeadMode, baithakInstruments, hoveredInstrument } from '$lib/stores.js';
 
+    /** @param {string | null} name */
+    function setHoveredInstrument(name = null) {
+        hoveredInstrument.set(name);
+    }
+
+    /** @typedef {'tanpura' | 'sitar' | 'pakhawaj' | 'tabla' | 'flute'} InstrumentKey */
+    /** @param {InstrumentKey} name */
     function toggleInstrument(name) {
         baithakInstruments.update(state => {
             const newState = { ...state, [name]: !state[name] };
@@ -9,8 +16,10 @@
             // SPECIAL LOGIC: Flute and Sitar are mutually exclusive lead instruments
             if (name === 'flute' && newState.flute) {
                 newState.sitar = false;
+                audioLeadMode.set('flute');
             } else if (name === 'sitar' && newState.sitar) {
                 newState.flute = false;
+                audioLeadMode.set('sitar');
             }
             
             return newState;
@@ -23,11 +32,11 @@
     aria-label="Baithak scene"
     style={`--audio-reactive-opacity: ${$audioBgDimmed ? 0.3 : 0}; --audio-bg-blur: ${$audioBgDimmed ? 7.986 : 0}px; --bg-image: url('${base}/images/AudioUI_BG.png');`}
 >
-    <img class="instrument tanpura" class:active={$baithakInstruments.tanpura} src="{base}/images/AudioUI_Tanpura.png" alt="Tanpura" role="button" tabindex="0" onclick={() => toggleInstrument('tanpura')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('tanpura')}>
-    <img class="instrument sitar" class:active={$baithakInstruments.sitar} src="{base}/images/AudioUI_Sitar.png" alt="Sitar" role="button" tabindex="0" onclick={() => toggleInstrument('sitar')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('sitar')}>
-    <img class="instrument pakhawaj" class:active={$baithakInstruments.pakhawaj} src="{base}/images/AudioUI_Pakhawaj.png" alt="Pakhawaj" role="button" tabindex="0" onclick={() => toggleInstrument('pakhawaj')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('pakhawaj')}>
-    <img class="instrument tabla" class:active={$baithakInstruments.tabla} src="{base}/images/AudioUI_Tabla.png" alt="Tabla" role="button" tabindex="0" onclick={() => toggleInstrument('tabla')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('tabla')}>
-    <img class="instrument flute" class:active={$baithakInstruments.flute} src="{base}/images/AudioUI_Flute.png" alt="Flute" role="button" tabindex="0" onclick={() => toggleInstrument('flute')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('flute')}>
+    <img class="instrument tanpura" class:active={$baithakInstruments.tanpura} src="{base}/images/AudioUI_Tanpura.png" alt="Tanpura" role="button" tabindex="0" onmouseenter={() => setHoveredInstrument('Tanpura')} onmouseleave={() => setHoveredInstrument(null)} onfocus={() => setHoveredInstrument('Tanpura')} onblur={() => setHoveredInstrument(null)} onclick={() => toggleInstrument('tanpura')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('tanpura')}>
+    <img class="instrument sitar" class:active={$baithakInstruments.sitar} src="{base}/images/AudioUI_Sitar.png" alt="Sitar" role="button" tabindex="0" onmouseenter={() => setHoveredInstrument('Sitar')} onmouseleave={() => setHoveredInstrument(null)} onfocus={() => setHoveredInstrument('Sitar')} onblur={() => setHoveredInstrument(null)} onclick={() => toggleInstrument('sitar')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('sitar')}>
+    <img class="instrument pakhawaj" class:active={$baithakInstruments.pakhawaj} src="{base}/images/AudioUI_Pakhawaj.png" alt="Pakhawaj" role="button" tabindex="0" onmouseenter={() => setHoveredInstrument('Pakhawaj')} onmouseleave={() => setHoveredInstrument(null)} onfocus={() => setHoveredInstrument('Pakhawaj')} onblur={() => setHoveredInstrument(null)} onclick={() => toggleInstrument('pakhawaj')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('pakhawaj')}>
+    <img class="instrument tabla" class:active={$baithakInstruments.tabla} src="{base}/images/AudioUI_Tabla.png" alt="Tabla" role="button" tabindex="0" onmouseenter={() => setHoveredInstrument('Tabla')} onmouseleave={() => setHoveredInstrument(null)} onfocus={() => setHoveredInstrument('Tabla')} onblur={() => setHoveredInstrument(null)} onclick={() => toggleInstrument('tabla')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('tabla')}>
+    <img class="instrument flute" class:active={$baithakInstruments.flute} src="{base}/images/AudioUI_Flute.png" alt="Flute" role="button" tabindex="0" onmouseenter={() => setHoveredInstrument('Flute')} onmouseleave={() => setHoveredInstrument(null)} onfocus={() => setHoveredInstrument('Flute')} onblur={() => setHoveredInstrument(null)} onclick={() => toggleInstrument('flute')} onkeydown={(e) => e.key === 'Enter' && toggleInstrument('flute')}>
 </section>
 
 <style>
@@ -103,7 +112,7 @@
     .sitar {
         height: 64.9%;
         right: 15.5%;
-        bottom: 18.8%;
+        bottom: 17.0%;
         z-index: 3;
         rotate: 10deg;
     }
@@ -125,7 +134,7 @@
     .flute {
         width: 21%;
         left: 34%;
-        bottom: 14.9%;
+        bottom: 11.9%;
         z-index: 6;
         rotate: 3deg;
         transform: scaleX(-1);

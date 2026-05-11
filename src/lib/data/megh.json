@@ -4,7 +4,7 @@
   "type": "Parent Raga",
   "description": "Refreshing and romantic; personified as Krishna dancing in the rain.",
   "color": "Dark Storm Clouds / Deep Blue",
-  "time": "Monsoon",
+  "time": "Any Time",
   "image": [
     {
       "url": "images/megh-main.jpg",
@@ -14,8 +14,22 @@
     }
   ],
   "musicalDNA": {
-    "arohana": ["C4", "D4", "F4", "G4", "Bb4", "C5"],
-    "avarohana": ["C5", "Bb4", "G4", "F4", "D4", "C4"],
+    "arohana": [
+      "C4",
+      "D4",
+      "F4",
+      "G4",
+      "Bb4",
+      "C5"
+    ],
+    "avarohana": [
+      "C5",
+      "Bb4",
+      "G4",
+      "F4",
+      "D4",
+      "C4"
+    ],
     "vadi": "C4",
     "samvadi": "G4",
     "tempo": "slow",
@@ -61,7 +75,9 @@
       "description": "A woman feeding a peacock under a heavily overcast sky.",
       "musicalMutation": {
         "description": "Flattens the 6th note for a moody, humid atmosphere.",
-        "flattenNotes": ["Ab4"],
+        "flattenNotes": [
+          "Ab4"
+        ],
         "tempo": "slow"
       }
     },

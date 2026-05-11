@@ -11,11 +11,28 @@
       "video": "video/bhairav-main.mp4",
       "txt": "Bhairav Raga painting."
     }
-
   ],
   "musicalDNA": {
-    "arohana": ["C4", "Db4", "E4", "F4", "G4", "Ab4", "B4", "C5"],
-    "avarohana": ["C5", "B4", "Ab4", "G4", "F4", "E4", "Db4", "C4"],
+    "arohana": [
+      "C4",
+      "Db4",
+      "E4",
+      "F4",
+      "G4",
+      "Ab4",
+      "B4",
+      "C5"
+    ],
+    "avarohana": [
+      "C5",
+      "B4",
+      "Ab4",
+      "G4",
+      "F4",
+      "E4",
+      "Db4",
+      "C4"
+    ],
     "vadi": "Ab4",
     "samvadi": "Db4",
     "tempo": "slow",
@@ -27,7 +44,10 @@
       "type": "Ragini",
       "musicalMutation": {
         "description": "Flattens the 3rd and 7th to create compassion (Karuna)",
-        "flatten": ["E4", "B4"],
+        "flatten": [
+          "E4",
+          "B4"
+        ],
         "vadi": "F4"
       },
       "children": [

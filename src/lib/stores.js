@@ -18,6 +18,7 @@ export const defaultSeason = getCurrentCalendarSeason();
 // Default season
 export const currentSeason = writable(defaultSeason);
 // The globally active Raga data
+/** @type {import('svelte/store').Writable<any>} */
 export const activeRaga = writable(null);
 // The globally active language code (defaults to English)
 export const currentLang = writable('en');
@@ -28,6 +29,11 @@ export const bgColorPrimary = writable('#3e2723'); // Default fallback
 export const bgColorAccent = writable('#ffaa00');  // Default fallback
 // Controls only the AudioUI background brightness state
 export const audioBgDimmed = writable(false);
+// Tracks the instrument currently hovered in the Audio Baithak UI
+/** @type {import('svelte/store').Writable<string | null>} */
+export const hoveredInstrument = writable(null);
+// Persists the preferred lead instrument mode for family-tree playback
+export const audioLeadMode = writable('sitar');
 // Controls whether the family tree is in full expansion dynamic mode
 export const isFullTreeMode = writable(false);
 

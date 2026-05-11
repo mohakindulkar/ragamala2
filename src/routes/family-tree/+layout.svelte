@@ -7,6 +7,7 @@
 	import Narrator from "$lib/components/Narrator.svelte";
 	import GlobalOverlay from '$lib/components/GlobalOverlay.svelte';
 	import AudioBaithak from '$lib/components/AudioBaithak.svelte';
+	import FamilyTreeConsole from '$lib/components/FamilyTreeConsole.svelte';
 
 	let { children } = $props();
 </script>
@@ -28,14 +29,21 @@
     --active-damask-w: var(--damask-w-{$currentSeason.toLowerCase()}, 150px);
     --active-damask-h: var(--damask-h-{$currentSeason.toLowerCase()}, 200px);
 ">
-	<Narrator />
-	<AudioBaithak />
-
-	<div class="page-content">
-		{@render children()}
+	<div class="rotate-gate">
+		<p>please rotate your device</p>
 	</div>
 
-	<GlobalOverlay />
+	<div class="desktop-shell">
+		<Narrator />
+		<AudioBaithak />
+
+		<div class="page-content">
+			{@render children()}
+		</div>
+
+		<FamilyTreeConsole />
+		<GlobalOverlay />
+	</div>
 </div>
 
 <style>
@@ -52,6 +60,32 @@
 		overflow: hidden;
 		margin: 0;
 		padding: 0;
+	}
+
+	.desktop-shell {
+		position: relative;
+		width: 100%;
+		height: 100%;
+	}
+
+	.rotate-gate {
+		display: none;
+		position: absolute;
+		inset: 0;
+		z-index: 1000;
+		background: var(--theme-parchment, #f4ece1);
+		color: var(--theme-ink, #3e2723);
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		padding: 24px;
+		font-family: var(--font-bharvati, Bharvati, serif);
+		font-size: clamp(1.4rem, 4vw, 2.4rem);
+		letter-spacing: 0.03em;
+	}
+
+	.rotate-gate p {
+		margin: 0;
 	}
 
 	/* THE MASKED TREE CONTAINER */
@@ -246,19 +280,29 @@
 		color: var(--theme-ink);
 	}
 
-	@media (max-width: 600px) {
-		.app-wrapper {
-			position: fixed;
-			left: 50%;
-			top: 50%;
-			width: 100vh;
-			height: 100vw;
-			transform: translate(-50%, -50%) rotate(90deg);
-			transform-origin: center center;
+	@media (max-width: 900px) and (orientation: portrait) {
+		.desktop-shell {
+			display: none;
+		}
+
+		.rotate-gate {
+			display: flex;
 		}
 
 		:global(body) {
 			overflow: hidden;
+			background: var(--theme-parchment, #f4ece1);
+		}
+	}
+
+	@media (max-width: 900px) and (orientation: landscape) {
+		.desktop-shell {
+			transform: scale(0.94);
+			transform-origin: center center;
+			width: 106.5%;
+			height: 106.5%;
+			margin-left: -3.25%;
+			margin-top: -3.25%;
 		}
 	}
 

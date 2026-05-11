@@ -4,7 +4,7 @@
   "type": "Parent Raga",
   "description": "Joyous and playful; personified as Lord Krishna on a swing (hindola).",
   "color": "Vibrant/Fertile (associated with Holi)",
-  "time": "Spring",
+  "time": "Midnight",
   "image": [
     {
       "url": "images/hindol-main.jpg",
@@ -14,8 +14,22 @@
     }
   ],
   "musicalDNA": {
-    "arohana": ["C4", "E4", "F#4", "A4", "B4", "C5"],
-    "avarohana": ["C5", "B4", "A4", "F#4", "E4", "C4"],
+    "arohana": [
+      "C4",
+      "E4",
+      "F#4",
+      "A4",
+      "B4",
+      "C5"
+    ],
+    "avarohana": [
+      "C5",
+      "B4",
+      "A4",
+      "F#4",
+      "E4",
+      "C4"
+    ],
     "vadi": "A4",
     "samvadi": "E4",
     "tempo": "medium-fast",
