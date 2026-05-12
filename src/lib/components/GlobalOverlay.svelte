@@ -10,6 +10,21 @@
     let isMagicMode = false;
     let qrImageUrl = "";
 
+    function deriveAudioPath(data) {
+        if (!data) return "";
+
+        const explicitAudio = data.audio || data.audioUrl;
+        if (explicitAudio) return explicitAudio.replace(/^\//, "");
+
+        const source = data.video || data.ar || "";
+        const fileName = source.split("/").pop() || "";
+        const stem = fileName.replace(/\.[^.]+$/, "");
+        if (!stem) return "";
+
+        const baseStem = stem.replace(/-main$/, "");
+        return `audio/${baseStem}-audio.wav`;
+    }
+
     // Reactively generate the QR code URL whenever Magic Mode is opened
     $: if (isMagicMode && browser && $overlayData) {
         // Automatically grabs your current domain
@@ -18,8 +33,9 @@
         // Clean up paths: ENSURE RELATIVE PATHS for the URL params
         const mindPath = ($overlayData.ar || 'ar/default.mind').replace(/^\//, '');
         const videoPath = ($overlayData.video || 'video/default.mp4').replace(/^\//, '');
+        const audioPath = deriveAudioPath($overlayData);
         
-        const targetUrl = `${baseUrl}${base}/ar-lens?mind=${encodeURIComponent(mindPath)}&video=${encodeURIComponent(videoPath)}`;
+        const targetUrl = `${baseUrl}${base}/ar-lens?mind=${encodeURIComponent(mindPath)}&video=${encodeURIComponent(videoPath)}${audioPath ? `&audio=${encodeURIComponent(audioPath)}` : ""}`;
         
         // Feeds the link to the free QR generation API
         qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(targetUrl)}`;

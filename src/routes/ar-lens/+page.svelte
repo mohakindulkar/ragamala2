@@ -6,6 +6,7 @@
     // Extract the dynamic paths from the URL parameters
     $: arMindUrl = decodeURIComponent($page.url.searchParams.get("mind") || "");
     $: videoUrl = decodeURIComponent($page.url.searchParams.get("video") || "");
+    $: audioUrl = decodeURIComponent($page.url.searchParams.get("audio") || "");
 
     function goBack() {
         if (browser) window.history.back();
@@ -35,7 +36,7 @@
                 <p>Mind: {arMindUrl}</p>
                 <p>Video: {videoUrl}</p>
             </div>
-            <ARViewer {arMindUrl} {videoUrl} />
+            <ARViewer {arMindUrl} {videoUrl} {audioUrl} />
         {:else}
             <div class="error-state">
                 <span class="icon">⚠️</span>

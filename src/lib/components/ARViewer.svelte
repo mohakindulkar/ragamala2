@@ -1,15 +1,34 @@
 <script>
     import { base } from '$app/paths';
-    import { onMount, onDestroy } from 'svelte';
+    import { onMount, onDestroy, tick } from 'svelte';
     import { browser } from '$app/environment';
 
     export let arMindUrl;
     export let videoUrl;
+    export let audioUrl = "";
 
     let scriptsLoaded = false;
     let userInteracted = false; // NEW: The Audio Lock State
     let container;
-    const baseUrl = window.location.origin;
+    const baseUrl = browser ? window.location.origin : "";
+
+    function resolveAssetUrl(assetPath) {
+        if (!assetPath) return "";
+        if (assetPath.startsWith('http') || assetPath.startsWith(baseUrl)) return assetPath;
+        return `${baseUrl}${base}${assetPath.replace(/^\//, '')}`;
+    }
+
+    function deriveAudioUrl() {
+        if (audioUrl) return audioUrl;
+
+        const source = videoUrl || arMindUrl || "";
+        const fileName = source.split('/').pop() || "";
+        const stem = fileName.replace(/\.[^.]+$/, "");
+        if (!stem) return "";
+
+        const baseStem = stem.replace(/-main$/, "");
+        return `audio/${baseStem}-audio.wav`;
+    }
 
     onMount(() => {
         if (!browser) return;
@@ -31,6 +50,28 @@
                             this.video = document.querySelector('#ar-video');
                             this.el.addEventListener('targetFound', () => { this.video.play(); });
                             this.el.addEventListener('targetLost', () => { this.video.pause(); });
+                        }
+                    });
+                }
+
+                if (!window.AFRAME.components['audio-controller']) {
+                    window.AFRAME.registerComponent('audio-controller', {
+                        init: function () {
+                            this.audio = document.querySelector('#ar-audio');
+                            this.el.addEventListener('targetFound', () => {
+                                if (!this.audio) return;
+                                const playPromise = this.audio.play();
+                                if (playPromise?.catch) {
+                                    playPromise.catch((err) => {
+                                        console.warn('AR audio playback blocked:', err);
+                                    });
+                                }
+                            });
+                            this.el.addEventListener('targetLost', () => {
+                                if (!this.audio) return;
+                                this.audio.pause();
+                                this.audio.currentTime = 0;
+                            });
                         }
                     });
                 }
@@ -59,8 +100,22 @@
             
             // Wait 1 second for the phone's hardware to fully release the camera lens.
             // Since permission is now permanently granted, MindAR can grab it without a click!
-            setTimeout(() => {
+            setTimeout(async () => {
                 userInteracted = true;
+                await tick();
+                const audioElement = document.querySelector('#ar-audio');
+                if (audioElement) {
+                    audioElement.muted = true;
+                    try {
+                        await audioElement.play();
+                        audioElement.pause();
+                        audioElement.currentTime = 0;
+                    } catch (err) {
+                        console.warn('Unable to prime AR audio playback:', err);
+                    } finally {
+                        audioElement.muted = false;
+                    }
+                }
             }, 1000);
         } catch (err) {
             console.error("Camera access denied:", err);
@@ -75,6 +130,12 @@
                 videoElement.pause();
                 videoElement.removeAttribute('src');
                 videoElement.load();
+            }
+            const audioElement = document.querySelector('#ar-audio');
+            if (audioElement) {
+                audioElement.pause();
+                audioElement.removeAttribute('src');
+                audioElement.load();
             }
             const streamVideo = document.querySelector('video');
             if (streamVideo && streamVideo.srcObject) {
@@ -100,6 +161,7 @@
         </div>
     {:else if arMindUrl && videoUrl}
         {@const cleanVideoUrl = videoUrl.startsWith('/') ? videoUrl : `/${videoUrl}`}
+        {@const cleanAudioUrl = deriveAudioUrl()}
         <a-scene
                 mindar-image={`imageTargetSrc: ${baseUrl}${base}/${arMindUrl.replace(/^\//, '')}; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.001; warmupTolerance: 10; missTolerance: 15;`}
                 color-space="sRGB"
@@ -117,11 +179,21 @@
                        webkit-playsinline
                        muted>
                 </video>
+                {#if cleanAudioUrl}
+                    <audio id="ar-audio"
+                           src={resolveAssetUrl(cleanAudioUrl)}
+                           preload="auto"
+                           loop
+                           crossorigin="anonymous"
+                           playsinline
+                           webkit-playsinline>
+                    </audio>
+                {/if}
             </a-assets>
 
             <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
 
-            <a-entity mindar-image-target="targetIndex: 0" video-controller>
+            <a-entity mindar-image-target="targetIndex: 0" video-controller audio-controller>
                 <!-- Optimized video plane -->
                 <a-video src="#ar-video" width="1" height="1.4" position="0 0 0" rotation="0 0 0"></a-video>
             </a-entity>
