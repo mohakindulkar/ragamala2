@@ -20,7 +20,8 @@
     function resolveAssetUrl(assetPath) {
         if (!assetPath) return "";
         if (assetPath.startsWith('http') || assetPath.startsWith(baseUrl)) return assetPath;
-        return `${baseUrl}${base}${assetPath.replace(/^\//, '')}`;
+        const cleanPath = assetPath.startsWith('/') ? assetPath : `/${assetPath}`;
+        return `${baseUrl}${base}${cleanPath}`;
     }
 
     function deriveAudioUrl() {
@@ -32,7 +33,7 @@
         if (!stem) return "";
 
         const baseStem = stem.replace(/-main$/, "");
-        return `audio/${baseStem}-audio.wav`;
+        return `/audio/${baseStem}-audio.wav`;
     }
 
     async function ensureAudioContext() {
