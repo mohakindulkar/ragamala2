@@ -11,6 +11,11 @@
     let userInteracted = false; // NEW: The Audio Lock State
     let container;
     const baseUrl = browser ? window.location.origin : "";
+    let audioCtx = null;
+    let audioBuffer = null;
+    let audioBufferPromise = null;
+    let activeAudioSource = null;
+    let activeAudioGain = null;
 
     function resolveAssetUrl(assetPath) {
         if (!assetPath) return "";
@@ -28,6 +33,100 @@
 
         const baseStem = stem.replace(/-main$/, "");
         return `audio/${baseStem}-audio.wav`;
+    }
+
+    async function ensureAudioContext() {
+        if (!browser) return null;
+
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        if (audioCtx.state === 'suspended') {
+            await audioCtx.resume();
+        }
+
+        return audioCtx;
+    }
+
+    async function loadAudioBuffer() {
+        if (audioBuffer) return audioBuffer;
+        if (audioBufferPromise) return audioBufferPromise;
+
+        audioBufferPromise = (async () => {
+            const ctx = await ensureAudioContext();
+            const assetUrl = resolveAssetUrl(deriveAudioUrl());
+            if (!ctx || !assetUrl) return null;
+
+            const response = await fetch(assetUrl);
+            if (!response.ok) {
+                throw new Error(`Failed to load AR audio: ${response.status} ${response.statusText}`);
+            }
+
+            const arrayBuffer = await response.arrayBuffer();
+            audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+            return audioBuffer;
+        })();
+
+        try {
+            return await audioBufferPromise;
+        } finally {
+            audioBufferPromise = null;
+        }
+    }
+
+    async function startRagaAudio() {
+        const ctx = await ensureAudioContext();
+        if (!ctx) return;
+
+        if (!audioBuffer) {
+            try {
+                await loadAudioBuffer();
+            } catch (err) {
+                console.warn('Unable to load AR audio buffer:', err);
+                return;
+            }
+        }
+
+        if (!audioBuffer || activeAudioSource) return;
+
+        const source = ctx.createBufferSource();
+        const gain = ctx.createGain();
+        source.buffer = audioBuffer;
+        source.loop = true;
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        source.connect(gain);
+        gain.connect(ctx.destination);
+        source.start();
+        gain.gain.linearRampToValueAtTime(1, ctx.currentTime + 0.35);
+
+        activeAudioSource = source;
+        activeAudioGain = gain;
+    }
+
+    function stopRagaAudio() {
+        if (!audioCtx || !activeAudioSource || !activeAudioGain) return;
+
+        const ctx = audioCtx;
+        const source = activeAudioSource;
+        const gain = activeAudioGain;
+
+        activeAudioSource = null;
+        activeAudioGain = null;
+
+        const now = ctx.currentTime;
+        try {
+            gain.gain.setValueAtTime(Math.max(gain.gain.value, 0.001), now);
+            gain.gain.linearRampToValueAtTime(0.001, now + 0.2);
+        } catch (err) {
+            console.warn('Unable to fade AR audio:', err);
+        }
+
+        setTimeout(() => {
+            try { source.stop(); } catch (err) {}
+            try { source.disconnect(); } catch (err) {}
+            try { gain.disconnect(); } catch (err) {}
+        }, 250);
     }
 
     onMount(() => {
@@ -57,20 +156,11 @@
                 if (!window.AFRAME.components['audio-controller']) {
                     window.AFRAME.registerComponent('audio-controller', {
                         init: function () {
-                            this.audio = document.querySelector('#ar-audio');
                             this.el.addEventListener('targetFound', () => {
-                                if (!this.audio) return;
-                                const playPromise = this.audio.play();
-                                if (playPromise?.catch) {
-                                    playPromise.catch((err) => {
-                                        console.warn('AR audio playback blocked:', err);
-                                    });
-                                }
+                                startRagaAudio();
                             });
                             this.el.addEventListener('targetLost', () => {
-                                if (!this.audio) return;
-                                this.audio.pause();
-                                this.audio.currentTime = 0;
+                                stopRagaAudio();
                             });
                         }
                     });
@@ -103,18 +193,10 @@
             setTimeout(async () => {
                 userInteracted = true;
                 await tick();
-                const audioElement = document.querySelector('#ar-audio');
-                if (audioElement) {
-                    audioElement.muted = true;
-                    try {
-                        await audioElement.play();
-                        audioElement.pause();
-                        audioElement.currentTime = 0;
-                    } catch (err) {
-                        console.warn('Unable to prime AR audio playback:', err);
-                    } finally {
-                        audioElement.muted = false;
-                    }
+                try {
+                    await loadAudioBuffer();
+                } catch (err) {
+                    console.warn('Unable to prime AR audio playback:', err);
                 }
             }, 1000);
         } catch (err) {
@@ -125,21 +207,19 @@
 
     onDestroy(() => {
         if (browser) {
+            stopRagaAudio();
             const videoElement = document.querySelector('#ar-video');
             if (videoElement) {
                 videoElement.pause();
                 videoElement.removeAttribute('src');
                 videoElement.load();
             }
-            const audioElement = document.querySelector('#ar-audio');
-            if (audioElement) {
-                audioElement.pause();
-                audioElement.removeAttribute('src');
-                audioElement.load();
-            }
             const streamVideo = document.querySelector('video');
             if (streamVideo && streamVideo.srcObject) {
                 streamVideo.srcObject.getTracks().forEach(track => track.stop());
+            }
+            if (audioCtx && audioCtx.state !== 'closed') {
+                audioCtx.close();
             }
         }
     });
@@ -161,7 +241,6 @@
         </div>
     {:else if arMindUrl && videoUrl}
         {@const cleanVideoUrl = videoUrl.startsWith('/') ? videoUrl : `/${videoUrl}`}
-        {@const cleanAudioUrl = deriveAudioUrl()}
         <a-scene
                 mindar-image={`imageTargetSrc: ${baseUrl}${base}/${arMindUrl.replace(/^\//, '')}; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.001; warmupTolerance: 10; missTolerance: 15;`}
                 color-space="sRGB"
@@ -179,16 +258,6 @@
                        webkit-playsinline
                        muted>
                 </video>
-                {#if cleanAudioUrl}
-                    <audio id="ar-audio"
-                           src={resolveAssetUrl(cleanAudioUrl)}
-                           preload="auto"
-                           loop
-                           crossorigin="anonymous"
-                           playsinline
-                           webkit-playsinline>
-                    </audio>
-                {/if}
             </a-assets>
 
             <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
