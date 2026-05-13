@@ -151,7 +151,7 @@
     }
 
     .verse-text {
-        font-family: var(--font-body, serif);
+        font-family: var(--font-ikaros, 'Ikaros Sans', sans-serif);
         font-size: 7px; font-style: italic; line-height: 1.1; opacity: 0.9;
         display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }

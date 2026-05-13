@@ -159,12 +159,12 @@
         gap: 0.12rem;
         justify-content: center;
         align-items: flex-start;
-        font-family: var(--font-bharvati, Bharvati, serif);
+        font-family: var(--font-ikaros, 'Ikaros Sans', sans-serif);
         color: #b5532d;
         font-size: clamp(0.88rem, 1.05vw, 1.4rem);
         line-height: 1.02;
         letter-spacing: 0.01em;
-        transform: translateY(15%);
+        transform: translateY(20%);
     }
 
     .info-row {
@@ -207,7 +207,7 @@
         justify-self: end;
         align-self: center;
         pointer-events: auto;
-        transform: translateY(40%);
+        transform: translateY(20%);
         margin-left: auto;
     }
 
@@ -219,7 +219,7 @@
         border: 1px solid rgba(181, 83, 45, 0.18);
         background: rgba(255, 248, 240, 0.9);
         color: #b5532d;
-        font-family: var(--font-bharvati, Bharvati, serif);
+        font-family: var(--font-ikaros, 'Ikaros Sans', sans-serif);
         font-size: clamp(1.6rem, 2.4vw, 3rem);
         line-height: 1;
         cursor: pointer;
@@ -258,7 +258,7 @@
 
         .mode-panel {
             justify-content: center;
-            transform: translateY(40%);
+            transform: translateY(20%);
             margin-left: 0;
         }
     }

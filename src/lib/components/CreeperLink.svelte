@@ -144,6 +144,7 @@
     .creeper-branch.raga-accent .creeper-item {
         fill: var(--raga-vine, var(--current-vine));
     }
+
     .creeper-branch g:nth-child(2n) .creeper-item:not(.symbol-lotus) {
         /* scaleX mirrors the element horizontally when --flip-factor is -1 */
         /*transform: translate(-50%, -100%) scaleX(-1) scale(var(--scale-factor));*/

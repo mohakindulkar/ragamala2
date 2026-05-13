@@ -115,7 +115,7 @@
         bottom: 60px; /* Pins the bottom of the panel perfectly to the top of the 60px corner */
         pointer-events: auto;
         /*background-color: var(--theme-parchment-dark, #e8dcc7);*/
-        border: 2px solid var(--theme-terra, #8b4513);
+        border: none;
         box-shadow: 0 4px 15px rgba(0,0,0,0.25);
         backdrop-filter: blur(80px) opacity(0.8);
         -webkit-backdrop-filter: blur(10px) opacity(0.5);

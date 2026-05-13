@@ -125,7 +125,7 @@
     {#each seasonsData as season}
         <path
             id="text-arc-{season.name}"
-            d={getArcPath(season.start, season.end, 90.1)}
+            d={getArcPath(season.start, season.end, 91.8)}
         />
         <clipPath id="clip-{season.name}"
             ><path d={getSlicePath(season.start, season.end)} /></clipPath

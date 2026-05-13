@@ -237,7 +237,7 @@
 
     .voice-btn {
         background-color: transparent; border: 2px solid var(--theme-terra, #8b4513); color: var(--theme-ink, #3e2723);
-        border-radius: 20px; padding: 8px 15px; font-family: var(--font-ui, sans-serif); font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 5px;
+        border-radius: 20px; padding: 8px 15px; font-family: var(--font-ikaros, 'Ikaros Sans', sans-serif); font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 5px;
     }
     .voice-btn:hover { background-color: rgba(139, 69, 19, 0.1); }
     .voice-btn.active { background-color: var(--accent-color, #d32f2f); border-color: var(--theme-sindoor, #d32f2f); color: #fff; }

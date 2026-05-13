@@ -116,12 +116,6 @@
                         <span class="state-stop"><span class="icon">🛑</span> Stop</span>
                     </button>
 
-                    {#if $activeRaga.time}
-                        <div class="metadata">
-                            <span class="meta-label">Time:</span> { $activeRaga.time }
-                        </div>
-                    {/if}
-
                     <h3 class="raga-title">{displayName}</h3>
                 </div>
             </div>
@@ -163,22 +157,17 @@
     }
 
     .poetry-text {
-        font-style: italic;
         color: var(--theme-ink, #3e2723);
         line-height: 1.5;
         margin: 0 0 15px 0;
         font-size: 1.1rem;
+        font-family: var(--font-ikaros, 'Ikaros Sans', sans-serif);
     }
 
     .metadata {
         font-family: var(--font-ui, sans-serif);
         font-size: 0.9rem;
         color: var(--theme-ink, #3e2723);
-    }
-
-    .meta-label {
-        font-weight: bold;
-        color: var(--theme-terra, #8b4513);
     }
 
     .voice-btn {
@@ -196,6 +185,7 @@
         gap: 5px;
         transition: all 0.2s;
         flex-shrink: 0; /* Prevents button from squishing */
+        font-family: var(--font-ikaros, 'Ikaros Sans', sans-serif);
     }
 
     .voice-btn:hover { background: rgba(211, 47, 47, 0.1); }

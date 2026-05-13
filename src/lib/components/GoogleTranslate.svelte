@@ -141,6 +141,7 @@
         padding: 10px;
         box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         width: 220px;
+        font-family: var(--font-ikaros, 'Ikaros Sans', sans-serif);
     }
 
     /* THE SCROLLABLE LIST (Fixes the 2613px bug forever) */
@@ -168,7 +169,7 @@
         border: none;
         text-align: left;
         padding: 8px 12px;
-        font-family: var(--font-ui, sans-serif);
+        font-family: var(--font-ikaros, 'Ikaros Sans', sans-serif);
         font-size: 14px;
         color: var(--theme-ink, #3e2723);
         cursor: pointer;

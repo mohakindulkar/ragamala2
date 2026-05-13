@@ -16,6 +16,7 @@
 
     /* UI elements also use Bharvati */
     --font-ui: 'Bharvati', serif;
+    --font-ikaros: 'Ikaros Sans', sans-serif;
 
     /* UNIFIED RAGAMALA THEME */
     --theme-parchment: #f4ece1; /* Base canvas */
